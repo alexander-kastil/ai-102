@@ -1,3 +1,4 @@
+# Set environment variables for resource naming
 env=dev
 grp=ai-102-$env
 loc=eastus
@@ -5,30 +6,72 @@ service=ai-102-service-$env
 kv=ai-102-kv-$env
 storage=ai102storage$env
 
+# Create a new resource group
 az group create -n $grp -l $loc
 
-az cognitiveservices account create --name $service -g $grp --kind CognitiveServices --sku F0 -l $loc
+# Create a new Azure AI Services multi-service account
+az cognitiveservices account create --name $service -g $grp --kind CognitiveServices --sku S0 -l $loc
 
+# Enable managed identity for the AI Services account
+az cognitiveservices account identity assign \
+    --name $service \
+    --resource-group $grp
+
+# Get the service key and endpoint
 serviceKey=$(az cognitiveservices account keys list --name $service -g $grp --query key1 -o tsv)
 endpoint=$(az cognitiveservices account show --name $service -g $grp --query properties.endpoint -o tsv)
 
 echo "Key: $serviceKey"
 echo "Endpoint: $endpoint"
 
-# Secrets
+# Create an Azure Key Vault with RBAC authorization disabled
 az keyvault create -n $kv -g $grp -l $loc --enable-rbac-authorization false
+
+# Get current user and set Key Vault access policy
 currentUser=$(az account show --query user.name -o tsv)
 az keyvault set-policy -n $kv --upn $currentUser --secret-permissions get list set delete
 
+# Store AI Services credentials in Key Vault
 az keyvault secret set --vault-name $kv --name "AI-Services-Key" --value $key
 az keyvault secret set --vault-name $kv --name "AI-Services-Endpoint" --value $endpoint
 
-# Storage
+# Create a storage account
 az storage account create -n $storage -g $grp -l $loc --sku Standard_LRS --kind StorageV2
 
+# Enable blob public access for the storage account
+az storage account update \
+    --name $storage \
+    --resource-group $grp \
+    --allow-blob-public-access true
+
+# Configure CORS rules for the storage account
+az storage cors add --account-name $storage --services b --origins '*' --methods GET PUT POST DELETE --allowed-headers '*' --exposed-headers '*' --max-age 0    
+
+# Get storage account access key
 storageKey=$(az storage account keys list -n $storage -g $grp --query [0].value -o tsv)
 
+# Create a container for storing images
 az storage container create -n "images" --account-name $storage --account-key $storageKey
 
-# Add CORS policy to the storage account
-az storage cors add --account-name $storage --services b --origins '*' --methods GET PUT POST DELETE --allowed-headers '*' --exposed-headers '*' --max-age 0
+# Get storage account resource ID
+storageId=$(az storage account show \
+    --name $storage \
+    --resource-group $grp \
+    --query id \
+    --output tsv)
+
+echo "Storage Account ID: $storageId"    
+
+# Get the service principal ID for the AI Services account
+principalId=$(az cognitiveservices account show \
+    --name $service \
+    --resource-group $grp \
+    --query identity.principalId \
+    --output tsv)
+
+# Assign Storage Blob Data Contributor role to the AI Services account
+az role assignment create \
+    --assignee-object-id $principalId \
+    --role "Storage Blob Data Contributor" \
+    --scope $storageId \
+    --assignee-principal-type ServicePrincipal
