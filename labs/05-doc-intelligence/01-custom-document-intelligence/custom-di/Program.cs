@@ -1,6 +1,7 @@
 using Azure;
 using Azure.AI.FormRecognizer.DocumentAnalysis;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 // Get configuration settings from AppSettings
 IConfiguration configuration = new ConfigurationBuilder()
@@ -11,11 +12,12 @@ string apiKey = configuration["DocIntelligenceKey"];
 AzureKeyCredential credential = new AzureKeyCredential(apiKey);
 DocumentAnalysisClient client = new DocumentAnalysisClient(new Uri(endpoint), credential);
 
-string modelId =  configuration["ModelId"];
-Uri fileUri = new Uri("https://github.com/MicrosoftLearning/mslearn-ai-document-intelligence/blob/main/Labfiles/02-custom-document-intelligence/test1.jpg?raw=true");
-Console.WriteLine($"Analyzing document from Uri: {fileUri.AbsoluteUri}");
+string modelId = configuration["ModelId"];
+string imagePath = Path.Combine(AppContext.BaseDirectory, "data", "test1.jpg");
+Console.WriteLine($"Analyzing document: {imagePath}");
 
-AnalyzeDocumentOperation operation = await client.AnalyzeDocumentFromUriAsync(WaitUntil.Completed, modelId, fileUri);
+using FileStream stream = new FileStream(imagePath, FileMode.Open);
+AnalyzeDocumentOperation operation = await client.AnalyzeDocumentAsync(WaitUntil.Completed, modelId, stream);
 AnalyzeResult result = operation.Value;
 
 Console.WriteLine($"Document was analyzed with model with ID: {result.ModelId}");
