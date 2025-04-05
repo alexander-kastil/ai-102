@@ -40,7 +40,7 @@ To use the Azure AI Document Intelligence service, you need a Azure AI Document 
 
 You'll use the sample forms such as this one to train a test a model:
 
-![An image of an invoice used in this project.](../../../../media/Form_1.jpg)
+![An image of an invoice used in this project.](../../media/Form_1.jpg)
 
 1.  Return to **Visual Studio Code**. In the _Explorer_ pane, open the **Labfiles/02-custom-document-intelligence** folder and expand the **sample-forms** folder. Notice there are files ending in **.json** and **.jpg** in the folder.
 
