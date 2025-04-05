@@ -1,0 +1,4 @@
+Write a promotional email for a new wildlife rescue, including the following: 
+    - Rescue name is Contoso 
+    - It specializes in elephants 
+    - Call for donations to be given at our website

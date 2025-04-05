@@ -1,0 +1,29 @@
+env=dev
+grp=ai-102-$env
+loc=eastus
+service=customvision-ai-us-102-$env
+storage=ai102storage$env
+
+az group create -n $grp -l $loc
+
+az cognitiveservices account create --name $service -g $grp --kind CustomVision.Training --sku S0 -l $loc
+
+az cognitiveservices account create --name $service-prediction -g $grp --kind CustomVision.Prediction --sku S0 -l $loc
+
+az storage account create --name $storage --resource-group $grp --location $loc --sku Standard_LRS
+key=$(az storage account keys list -g $grp -n $storage --query '[0].value' -o tsv)
+az storage container create --name images --account-name $storage --account-key $key
+az storage blob upload --account-name $storage --container-name images --name weinberg.jpg --file weinberg.jpg --account-key $key
+
+# Get training key and endpoint
+trainingKey=$(az cognitiveservices account keys list -n $service -g $grp --query 'key1' -o tsv)
+trainingEndpoint=$(az cognitiveservices account show -n $service -g $grp --query 'properties.endpoint' -o tsv)
+
+echo "Training key: $trainingKey"
+echo "Training endpoint: $trainingEndpoint"
+
+# Purge a deleted cognitive service resource (run this only after deleting the resource)
+az cognitiveservices account delete -n $service -g $grp --yes --no-wait
+az cognitiveservices account delete -n $service-prediction -g $grp --yes --no-wait
+az cognitiveservices account purge -n $service -g $grp -l $loc
+az cognitiveservices account purge -n $service-prediction -g $grp -l $loc

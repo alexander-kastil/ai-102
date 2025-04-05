@@ -1,0 +1,34 @@
+env=dev
+grp=ai-102-$env
+loc=eastus
+service=ai-102-service-$env
+kv=ai-102-kv-$env
+storage=ai102storage$env
+
+az group create -n $grp -l $loc
+
+az cognitiveservices account create --name $service -g $grp --kind CognitiveServices --sku F0 -l $loc
+
+serviceKey=$(az cognitiveservices account keys list --name $service -g $grp --query key1 -o tsv)
+endpoint=$(az cognitiveservices account show --name $service -g $grp --query properties.endpoint -o tsv)
+
+echo "Key: $serviceKey"
+echo "Endpoint: $endpoint"
+
+# Secrets
+az keyvault create -n $kv -g $grp -l $loc --enable-rbac-authorization false
+currentUser=$(az account show --query user.name -o tsv)
+az keyvault set-policy -n $kv --upn $currentUser --secret-permissions get list set delete
+
+az keyvault secret set --vault-name $kv --name "AI-Services-Key" --value $key
+az keyvault secret set --vault-name $kv --name "AI-Services-Endpoint" --value $endpoint
+
+# Storage
+az storage account create -n $storage -g $grp -l $loc --sku Standard_LRS --kind StorageV2
+
+storageKey=$(az storage account keys list -n $storage -g $grp --query [0].value -o tsv)
+
+az storage container create -n "images" --account-name $storage --account-key $storageKey
+
+# Add CORS policy to the storage account
+az storage cors add --account-name $storage --services b --origins '*' --methods GET PUT POST DELETE --allowed-headers '*' --exposed-headers '*' --max-age 0

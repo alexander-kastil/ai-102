@@ -1,0 +1,38 @@
+env=dev
+grp=ai-102-$env
+loc=westeurope
+service=language-free-ai-102-$env
+storage=ai102storage$env
+
+az group create -n $grp -l $loc
+
+# Create Language Service resource with F0 (free) pricing tier
+az cognitiveservices account create \
+    --name $service \
+    --resource-group $grp \
+    --location $loc \
+    --kind TextAnalytics \
+    --sku F0 \
+    --yes
+
+# Associate the storage account with the Language Service
+az cognitiveservices account identity assign \
+    --name $service \
+    --resource-group $grp
+
+# Get the storage account ID
+storageId=$(az storage account show \
+    --name $storage \
+    --resource-group $grp \
+    --query id \
+    --output tsv)
+
+# Assign Storage Blob Data Contributor role to the Language Service's managed identity
+az role assignment create \
+    --assignee-object-id $(az cognitiveservices account show \
+        --name $service \
+        --resource-group $grp \
+        --query identity.principalId \
+        --output tsv) \
+    --role "Storage Blob Data Contributor" \
+    --scope $storageId

@@ -1,0 +1,17 @@
+RG_NAME=rg-ai-102
+LOC="WestEurope"
+AI_ACCOUNT_NAME=aoai-tmh6tunfzlhxe
+AI_KIND="OpenAI"
+AI_SKU="S0"
+DEPLOY_NAME="dall-e-3"
+MODEL_ID="dall-e-3"
+MODEL_TYPE="OpenAI"
+MODEL_VER="3.0"
+DEPLOY_SKU_NAME="Standard"
+DEPLOY_SKU_CAPACITY="1"
+
+az group create --name $RG_NAME --location $LOC
+
+az cognitiveservices account create --name $AI_ACCOUNT_NAME --location $LOC --resource-group $RG_NAME --kind $AI_KIND --sku $AI_SKU
+
+az cognitiveservices account deployment create --name $AI_ACCOUNT_NAME --resource-group $RG_NAME --deployment-name $DEPLOY_NAME --model-name $MODEL_ID --model-format $MODEL_TYPE --model-version $MODEL_VER --sku-name $DEPLOY_SKU_NAME --sku-capacity $DEPLOY_SKU_CAPACITY

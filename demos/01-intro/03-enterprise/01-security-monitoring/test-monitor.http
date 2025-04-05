@@ -1,0 +1,15 @@
+POST <your-endpoint>/language/:analyze-text?api-version=2023-04-01
+Content-Type: application/json
+Ocp-Apim-Subscription-Key: <your-key>
+
+{
+  "analysisInput": {
+    "documents": [
+      {
+        "id": 1,
+        "text": "hello"
+      }
+    ]
+  },
+  "kind": "LanguageDetection"
+}
