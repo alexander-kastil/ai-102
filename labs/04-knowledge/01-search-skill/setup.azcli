@@ -1,0 +1,66 @@
+# Environment configuration
+env=dev
+grp=ai-102-$env
+loc=westeurope
+storage=ai102str$env$RANDOM
+aisearch=aisearchai102$env$RANDOM
+
+az storage account create \
+    --name $storage \
+    --resource-group $grp \
+    --location $loc \
+    --sku Standard_LRS \
+    --encryption-services blob
+
+key=$(az storage account keys list \
+    --account-name $storage \
+    --resource-group $grp \
+    --query '[0].value' \
+    --output tsv)
+
+echo "Key: $key"
+
+az storage account blob-service-properties update \
+    --account-name $storage \
+    --allow-blob-public-access true \
+    --account-key $key
+
+az storage container create \
+    --account-name $storage \
+    --name margies \
+    --public-access blob \
+    --account-key $key
+
+az storage blob upload-batch \
+    -d margies \
+    -s data \
+    --account-name $storage \
+    --account-key $key \
+    --overwrite
+
+
+az search service create \
+    --name $aisearch \
+    --resource-group $grp \
+    --location $loc \
+    --sku Basic
+
+echo "-------------------------------------"
+echo "Storage account: $storage"
+az storage account show-connection-string \
+    --resource-group $grp \
+    --name $storage
+
+echo "----"
+echo "Search Service: $aisearch"
+echo "URL: https://$aisearch.search.windows.net"
+
+echo "Admin Keys:"
+az search admin-key show \
+    --resource-group $grp \
+    --service-name $aisearch
+
+echo "Query Keys:"
+az search query-key list \
+    --resource-group $grp \
+    --service-name $aisearch

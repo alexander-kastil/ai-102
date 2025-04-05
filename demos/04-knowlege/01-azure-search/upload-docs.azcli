@@ -1,0 +1,39 @@
+env=dev
+grp=ai-102-$env
+loc=westeurope
+azure_storage_account=ai102storagedev
+aisearch=aisearchknowledegeai102$RANDOM
+
+key=$(az storage account keys list \
+    --account-name $azure_storage_account \
+    --resource-group $grp \
+    --query '[0].value' \
+    --output tsv)
+
+echo "Key: $key"    
+
+az storage container create \
+    --account-name $azure_storage_account \
+    --name margies \
+    --account-key $key 
+
+az storage blob upload-batch \
+    -d margies \
+    -s data \
+    --account-name $azure_storage_account \
+    --account-key $key \
+    --overwrite   
+
+az search service create \
+    --name $aisearch \
+    --resource-group $grp \
+    --location $loc \
+    --sku Basic
+
+# delete after this lab to save resources
+echo "Deleting Azure AI Search instance..."
+az search service delete \
+    --name $aisearch \
+    --resource-group $grp \
+    --yes # Skip confirmation prompt
+

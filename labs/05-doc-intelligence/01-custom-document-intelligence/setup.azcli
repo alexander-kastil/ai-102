@@ -1,0 +1,49 @@
+# Variables
+env=dev
+grp=ai-102-$env
+loc=westeurope
+expiry_date="2025-04-10T00:00:00Z"
+storage_acct=ai102form$RANDOM
+
+az storage account create \
+    --name $storage_acct \
+    --resource-group $grp \
+    --location $loc \
+    --sku Standard_LRS \
+    --encryption-services blob
+
+az storage account update \
+    --name $storage_acct \
+    --resource-group $grp \
+    --allow-blob-public-access true
+
+key=$(az storage account keys list \
+    --account-name $storage_acct \
+    --resource-group $grp \
+    --query '[0].value' \
+    --output tsv)
+
+az storage container create \
+    --name sampleforms \
+    --account-name $storage_acct \
+    --account-key $key \
+    --public-access blob
+
+az storage blob upload-batch \
+    -d sampleforms \
+    -s ./sample-forms \
+    --account-name $storage_acct \
+    --account-key $key
+
+sas_token=$(az storage container generate-sas \
+    --account-name $storage_acct \
+    --name sampleforms \
+    --expiry $expiry_date \
+    --permissions rwl \
+    --account-key $key \
+    --output tsv)
+
+uri="https://$storage_acct.blob.core.windows.net/sampleforms?$sas_token"
+
+echo "-------------------------------------"
+echo "SAS URI: $uri"
