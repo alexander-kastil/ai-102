@@ -1,8 +1,8 @@
 @echo off
 
 rem Set values for your Search service
-set url=https://ai-dev-search-free.search.windows.net
-set admin_key=A4iH0OQ7x0ZxC9jAVdibRG6Uftt92KT5zOVBgDJhn2AzSeBLbcrx
+set url=https://aisearchknowledegeai10222932.search.windows.net
+set admin_key=UEYIGQGEHjkQRpcQkHrILADOkfNzsDhfhF8lS2Uv0KAzSeAZPQlq
 
 echo -----
 echo Updating the skillset...

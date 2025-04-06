@@ -14,8 +14,6 @@ using Azure;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 
-
-
 namespace search_client.Pages
 {
     public class IndexModel : PageModel
@@ -40,21 +38,19 @@ namespace search_client.Pages
         //Wrapper function for request to search index
         public SearchResults<SearchResult> search_query(string searchText, string filterBy, string sortOrder)
         {
-
             // Create a search client
             AzureKeyCredential credential = new AzureKeyCredential(QueryKey);
             SearchClient searchClient = new SearchClient(SearchEndpoint, IndexName, credential);
 
-
-
             // Submit search query
-            var options = new SearchOptions{
+            var options = new SearchOptions
+            {
                 IncludeTotalCount = true,
                 SearchMode = SearchMode.All,
                 Filter = filterBy,
-                OrderBy = {sortOrder},
-                Facets = {"metadata_author"},
-                HighlightFields = {"merged_content-3","imageCaption-3"} 
+                OrderBy = { sortOrder },
+                Facets = { "metadata_author" },
+                HighlightFields = { "merged_content-3", "imageCaption-3" }
             };
             options.Select.Add("url");
             options.Select.Add("metadata_storage_name");
@@ -70,14 +66,10 @@ namespace search_client.Pages
             options.Select.Add("imageCaption");
             SearchResults<SearchResult> results = searchClient.Search<SearchResult>(searchText, options);
             return results;
-
-
-
         }
 
         public void OnGet()
         {
-
             // Get the search endpoint and key
             IConfigurationBuilder _builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
             IConfigurationRoot _configuration = _builder.Build();
@@ -86,32 +78,33 @@ namespace search_client.Pages
             IndexName = _configuration["SearchIndexName"];
 
 
-            if (Request.QueryString.HasValue){
+            if (Request.QueryString.HasValue)
+            {
                 var queryString = QueryHelpers.ParseQuery(Request.QueryString.ToString());
                 SearchTerms = queryString["search"];
 
-                if (queryString.Keys.Contains("sort")){
+                if (queryString.Keys.Contains("sort"))
+                {
                     SortOrder = queryString["sort"];
                 }
 
-                if (queryString.Keys.Contains("facet")){
+                if (queryString.Keys.Contains("facet"))
+                {
                     FilterExpression = "metadata_author eq '" + queryString["facet"] + "'";
                 }
                 else
                 {
                     FilterExpression = "";
                 }
-                
+
 
                 search_results = search_query(SearchTerms, FilterExpression, SortOrder);
 
             }
-            else{
-                SearchTerms="";
+            else
+            {
+                SearchTerms = "";
             }
         }
-
-
     }
-
 }

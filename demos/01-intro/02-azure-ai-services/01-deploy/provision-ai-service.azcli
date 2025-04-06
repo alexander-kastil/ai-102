@@ -1,8 +1,8 @@
 # Set environment variables for resource naming
 env=dev
 grp=ai-102-$env
-loc=eastus
-service=ai-102-service-$env
+loc=westeurope
+service=ai-102-$loc-$env
 kv=ai-102-kv-$env
 storage=ai102storage$env
 
