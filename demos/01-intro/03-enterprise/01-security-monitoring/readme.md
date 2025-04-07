@@ -5,4 +5,4 @@
 ## Demos
 
 - Show Authentication Options
-- Show Monitoring Options (Key and Total Calls)
+- Show Monitoring Options (Total Calls)
