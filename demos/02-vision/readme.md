@@ -1,6 +1,6 @@
 # Create computer vision solutions with Azure AI Vision
 
-[Azure AI Vision Studio](https://vision.cognitive.azure.com/)
+[Azure AI Vision Studio](https://portal.vision.cognitive.azure.com/)
 
 [Azure AI Foundry - Vision](https://ai.azure.com/explore/aiservices/vision)
 
