@@ -177,17 +177,8 @@ func new --template "HTTP trigger" --name wordcount --authlevel function
 
 ````_
 
-3. On the **Overview** page select **Create function** at the bottom of the page to create a new function with the following settings:
-
-   - **Select a template**
-     - **Template**: HTTP Trigger
-   - **Template details**:
-     - **Function name**: wordcount
-     - **Authorization level**: Function
-
-   > **Note**: If you receive a Creating Function error, please refresh the page and the resource should have been created as expected.
-
 4. Wait for the _wordcount_ function to be created. Then in its page, select the **Code + Test** tab.
+
 5. Replace the default function code with the following code:
 
 ```javascript
@@ -289,32 +280,10 @@ module.exports = async function (context, req) {
 ````
 
 6. Save the function and then open the **Test/Run** pane.
-7. In the **Test/Run** pane, replace the existing **Body** with the following JSON, which reflects the schema expected by an Azure AI Search skill in which records containing data for one or more documents are submitted for processing:
 
-   ```json
-   {
-       "values": [
-           {
-               "recordId": "a1",
-               "data":
-               {
-               "text":  "Tiger, tiger burning bright in the darkness of the night.",
-               "language": "en"
-               }
-           },
-           {
-               "recordId": "a2",
-               "data":
-               {
-               "text":  "The rain in spain stays mainly in the plains! That's where you'll find the rain!",
-               "language": "en"
-               }
-           }
-       ]
-   }
-   ```
+7. Execute `test-func.ps1` or test-func.http
 
-8. Click **Run** and view the HTTP response content that is returned by your function. This reflects the schema expected by Azure AI Search when consuming a skill, in which a response for each document is returned. In this case, the response consists of up to 10 terms in each document in descending order of how frequently they appear:
+8. The result should be returned. This reflects the schema expected by Azure AI Search when consuming a skill, in which a response for each document is returned. In this case, the response consists of up to 10 terms in each document in descending order of how frequently they appear:
 
    ```json
    {
@@ -350,7 +319,11 @@ module.exports = async function (context, req) {
    }
    ```
 
-9. Close the **Test/Run** pane and in the **wordcount** function blade, click **Get function URL**. Then copy the URL for the default key to the clipboard. You'll need this in the next procedure.
+9. Deploy the function app from the custom-skill-func folder using azure function core tools
+
+```powershell
+func azure functionapp publish <function-app-name> --csharp
+```
 
 ## Add the custom skill to the search solution
 
