@@ -1,5 +1,7 @@
 ### Test word count function
-POST http://localhost:7071/api/wordcount
+# POST http://localhost:7071/api/wordcount
+
+POST https://custom-skills-1636.azurewebsites.net/api/wordcount
 Content-Type: application/json
 
 {

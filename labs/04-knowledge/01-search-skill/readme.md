@@ -1,9 +1,3 @@
----
-lab:
-    title: 'Create a Custom Skill for Azure AI Search'
-    module: 'Module 12 - Creating a Knowledge Mining Solution'
----
-
 # Create a Custom Skill for Azure AI Search
 
 Azure AI Search uses an enrichment pipeline of AI skills to extract AI-generated fields from documents and include them in a search index. There's a comprehensive set of built-in skills that you can use, but if you have a specific requirement that isn't met by these skills, you can create a custom skill.
@@ -161,7 +155,7 @@ To implement the word count functionality as a custom skill, you'll create an Az
 npm install -g azure-functions-core-tools@4 --unsafe-perm true
 ```
 
-3. Create a folder custom-skill in your local machine
+3. Create a folder `custom-skill-func` in your local machine
 
 ```powershell
 mkdir custom-skill-func
@@ -175,22 +169,15 @@ func init --worker-runtime node
 func new --template "HTTP trigger" --name wordcount --authlevel function
 ```
 
-````_
-
 4. Wait for the _wordcount_ function to be created. Then in its page, select the **Code + Test** tab.
 
 5. Replace the default function code with the following code:
 
 ```javascript
-module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
+const { app } = require('@azure/functions');
 
-    if (req.body && req.body.values) {
-
-        vals = req.body.values;
-
-        // Array of stop words to be ignored
-        var stopwords = ['', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
+// Array of stop words to be ignored
+const stopwords = ['', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
         "youre", "youve", "youll", "youd", 'your', 'yours', 'yourself',
         'yourselves', 'he', 'him', 'his', 'himself', 'she', "shes", 'her',
         'hers', 'herself', 'it', "its", 'itself', 'they', 'them',
@@ -209,77 +196,63 @@ module.exports = async function (context, req) {
         "didnt", "doesnt", "hadnt", "hasnt", "havent", "isnt", "mightnt", "mustnt",
         "neednt", "shant", "shouldnt", "wasnt", "werent", "wont", "wouldnt"];
 
-        res = {"values":[]};
+app.http('wordcount', {
+  methods: ['POST'],
+  authLevel: 'anonymous',
+  handler: async (request, context) => {
+    context.log('JavaScript HTTP trigger function processed a request.');
 
-        for (rec in vals)
-        {
-            // Get the record ID and text for this input
-            resVal = {recordId:vals[rec].recordId, data:{}};
-            txt = vals[rec].data.text;
+    const body = await request.json();
 
-            // remove punctuation and numerals
-            txt = txt.replace(/[^ A-Za-z_]/g,"").toLowerCase();
+    if (body && body.values) {
+      const vals = body.values;
+      const res = { values: [] };
 
-            // Get an array of words
-            words = txt.split(" ")
+      for (const rec in vals) {
+        // Get the record ID and text for this input
+        const resVal = { recordId: vals[rec].recordId, data: {} };
+        let txt = vals[rec].data.text;
 
-            // count instances of non-stopwords
-            wordCounts = {}
-            for(var i = 0; i < words.length; ++i) {
-                word = words[i];
-                if (stopwords.includes(word) == false )
-                {
-                    if (wordCounts[word])
-                    {
-                        wordCounts[word] ++;
-                    }
-                    else
-                    {
-                        wordCounts[word] = 1;
-                    }
-                }
-            }
+        // remove punctuation and numerals
+        txt = txt.replace(/[^ A-Za-z_]/g, '').toLowerCase();
 
-            // Convert wordcounts to an array
-            var topWords = [];
-            for (var word in wordCounts) {
-                topWords.push([word, wordCounts[word]]);
-            }
+        // Get an array of words
+        const words = txt.split(' ');
 
-            // Sort in descending order of count
-            topWords.sort(function(a, b) {
-                return b[1] - a[1];
-            });
+        // count instances of non-stopwords
+        const wordCounts = {};
+        for (let i = 0; i < words.length; ++i) {
+          const word = words[i];
+          if (!stopwords.includes(word)) {
+            wordCounts[word] = (wordCounts[word] || 0) + 1;
+          }
+        } // Get unique words (not counting duplicates)
+        const uniqueWords = Object.keys(wordCounts);
 
-            // Get the first ten words from the first array dimension
-            resVal.data.text = topWords.slice(0,9)
-              .map(function(value,index) { return value[0]; });
+        // Add the filtered words to the response
+        resVal.data.text = uniqueWords;
 
-            res.values[rec] = resVal;
-        };
+        res.values[rec] = resVal;
+      }
 
-        context.res = {
-            body: JSON.stringify(res),
-            headers: {
-            'Content-Type': 'application/json'
-        }
-
-        };
+      return {
+        jsonBody: res,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        jsonBody: { errors: [{ message: 'Invalid input' }] },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
     }
-    else {
-        context.res = {
-            status: 400,
-            body: {"errors":[{"message": "Invalid input"}]},
-            headers: {
-            'Content-Type': 'application/json'
-        }
-
-        };
-    }
-};
-````
-
-6. Save the function and then open the **Test/Run** pane.
+  },
+});
+```
 
 7. Execute `test-func.ps1` or test-func.http
 
@@ -319,10 +292,31 @@ module.exports = async function (context, req) {
    }
    ```
 
-9. Deploy the function app from the custom-skill-func folder using azure function core tools
+9. Deploy the function app from the `custom-skill-func` folder using azure function core tools
 
 ```powershell
-func azure functionapp publish <function-app-name> --csharp
+func azure functionapp publish custom-skills-123
+```
+
+10. Go to Test / run and paste the following JSON in the body:
+
+```json
+{
+  "values": [
+    {
+      "recordId": "a1",
+      "data": {
+        "text": "Tiger, tiger, burning bright, in the forests of the night."
+      }
+    },
+    {
+      "recordId": "a2",
+      "data": {
+        "text": "The rain in Spain stays mainly in the plains. That's what you'll find."
+      }
+    }
+  ]
+}
 ```
 
 ## Add the custom skill to the search solution

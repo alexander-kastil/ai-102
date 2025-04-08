@@ -2,7 +2,7 @@
 env=dev
 grp=ai-102-$env
 loc=westeurope
-storage=ai102str$env$RANDOM
+storage=ai102storage$env
 aisearch=aisearchai102$env$RANDOM
 
 az storage account create \
@@ -64,3 +64,12 @@ echo "Query Keys:"
 az search query-key list \
     --resource-group $grp \
     --service-name $aisearch
+
+
+funcapp=custom-skills-$RANDOM
+az functionapp create -n $funcapp -g $grp -s $storage --consumption-plan-location $loc --runtime node --runtime-version 20 --functions-version 4
+
+# Configure CORS for the function app
+az functionapp cors add --name $funcapp \
+    --resource-group $grp \
+    --allowed-origins "*"
