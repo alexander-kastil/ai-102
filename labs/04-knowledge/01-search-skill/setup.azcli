@@ -66,10 +66,27 @@ az search query-key list \
     --service-name $aisearch
 
 
+# create function app node
 funcapp=custom-skills-$RANDOM
-az functionapp create -n $funcapp -g $grp -s $storage --consumption-plan-location $loc --runtime node --runtime-version 20 --functions-version 4
+az functionapp create -n $custom-skill-func -g $grp -s $storage --consumption-plan-location $loc --runtime node --runtime-version 20 --functions-version 4
 
 # Configure CORS for the function app
 az functionapp cors add --name $funcapp \
+    --resource-group $grp \
+    --allowed-origins "*"
+
+# create the function app python    
+funcpy=custom-skills-py-$RANDOM
+az functionapp create \
+    --name $funcpy \
+    --resource-group $grp \
+    --storage-account $storage \
+    --consumption-plan-location $loc \
+    --runtime python \
+    --runtime-version 3.11 \
+    --functions-version 4 \
+    --os-type Linux
+
+az functionapp cors add --name $funcpy \
     --resource-group $grp \
     --allowed-origins "*"
