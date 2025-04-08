@@ -2,7 +2,7 @@
 
 rem Set values for your Search service
 set url=https://aisearchknowledegeai10222932.search.windows.net
-set admin_key=UEYIGQGEHjkQRpcQkHrILADOkfNzsDhfhF8lS2Uv0KAzSeAZPQlq
+set admin_key=<your admin key>
 
 echo -----
 echo Creating the data source...
