@@ -1,0 +1,370 @@
+{
+  "food": [
+    {
+      "ID": 1,
+      "Name": "Butter Chicken",
+      "Price": 12,
+      "InStock": 9,
+      "PictureUrl": "",
+      "Allergies": ["Dairy"],
+      "Diet": ["Low Carb", "Keto"],
+      "Calories": 600
+    },
+    {
+      "ID": 2,
+      "Name": "Blini with Salmon",
+      "Price": 9,
+      "InStock": 12,
+      "PictureUrl": "",
+      "Allergies": ["Fish", "Gluten"],
+      "Diet": ["Low Carb"],
+      "Calories": 450
+    },
+    {
+      "ID": 3,
+      "Name": "Wiener Schnitzel",
+      "Price": 18,
+      "InStock": 23,
+      "PictureUrl": "",
+      "Allergies": ["Gluten", "Eggs"],
+      "Diet": [],
+      "Calories": 700
+    },
+    {
+      "ID": 4,
+      "Name": "Pad Kaprao",
+      "Price": 11,
+      "InStock": 15,
+      "PictureUrl": "",
+      "Allergies": ["Soy"],
+      "Diet": ["Low Carb"],
+      "Calories": 500
+    },
+    {
+      "ID": 5,
+      "Name": "Currywurst",
+      "Price": 8,
+      "InStock": 20,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": [],
+      "Calories": 550
+    },
+    {
+      "ID": 6,
+      "Name": "Rösti mit Bratwurst",
+      "Price": 16,
+      "InStock": 10,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": [],
+      "Calories": 650
+    },
+    {
+      "ID": 7,
+      "Name": "Quinoa Greek Salad",
+      "Price": 14,
+      "InStock": 15,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": [],
+      "Calories": 400
+    },
+    {
+      "ID": 8,
+      "Name": "Beetroot Coconut Curry",
+      "Price": 13,
+      "InStock": 12,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": [],
+      "Calories": 480
+    },
+    {
+      "ID": 9,
+      "Name": "Falafel Wrap",
+      "Price": 7,
+      "InStock": 25,
+      "PictureUrl": "",
+      "Allergies": ["Gluten"],
+      "Diet": ["Vegetarian", "Vegan"],
+      "Calories": 350
+    },
+    {
+      "ID": 10,
+      "Name": "Keto Avocado Salad",
+      "Price": 10,
+      "InStock": 18,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": ["Keto", "Vegetarian"],
+      "Calories": 300
+    },
+    {
+      "ID": 11,
+      "Name": "Tom Yum Soup",
+      "Price": 12,
+      "InStock": 20,
+      "PictureUrl": "",
+      "Allergies": ["Shellfish"],
+      "Diet": ["Low Carb"],
+      "Calories": 200
+    },
+    {
+      "ID": 12,
+      "Name": "Chicken Biryani",
+      "Price": 15,
+      "InStock": 10,
+      "PictureUrl": "",
+      "Allergies": ["Dairy"],
+      "Diet": [],
+      "Calories": 650
+    },
+    {
+      "ID": 13,
+      "Name": "Vegan Pad Thai",
+      "Price": 13,
+      "InStock": 14,
+      "PictureUrl": "",
+      "Allergies": ["Peanuts"],
+      "Diet": ["Vegan"],
+      "Calories": 500
+    },
+    {
+      "ID": 14,
+      "Name": "Shawarma Plate",
+      "Price": 11,
+      "InStock": 22,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": [],
+      "Calories": 600
+    },
+    {
+      "ID": 15,
+      "Name": "Margherita Pizza",
+      "Price": 9,
+      "InStock": 30,
+      "PictureUrl": "",
+      "Allergies": ["Gluten", "Dairy"],
+      "Diet": ["Vegetarian"],
+      "Calories": 700
+    },
+    {
+      "ID": 16,
+      "Name": "Butter Naan",
+      "Price": 3,
+      "InStock": 50,
+      "PictureUrl": "",
+      "Allergies": ["Gluten", "Dairy"],
+      "Diet": [],
+      "Calories": 250
+    },
+    {
+      "ID": 17,
+      "Name": "Vegan Chocolate Cake",
+      "Price": 6,
+      "InStock": 15,
+      "PictureUrl": "",
+      "Allergies": ["Gluten"],
+      "Diet": ["Vegan"],
+      "Calories": 400
+    },
+    {
+      "ID": 18,
+      "Name": "Keto Beef Stew",
+      "Price": 14,
+      "InStock": 12,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": ["Keto"],
+      "Calories": 550
+    },
+    {
+      "ID": 19,
+      "Name": "Pasta Carbonara",
+      "Price": 12,
+      "InStock": 20,
+      "PictureUrl": "",
+      "Allergies": ["Gluten", "Dairy", "Eggs"],
+      "Diet": [],
+      "Calories": 800
+    },
+    {
+      "ID": 20,
+      "Name": "Vegetarian Lasagna",
+      "Price": 11,
+      "InStock": 15,
+      "PictureUrl": "",
+      "Allergies": ["Gluten", "Dairy"],
+      "Diet": ["Vegetarian"],
+      "Calories": 600
+    },
+    {
+      "ID": 21,
+      "Name": "Vegan Green Curry",
+      "Price": 13,
+      "InStock": 18,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": ["Vegan"],
+      "Calories": 450
+    },
+    {
+      "ID": 22,
+      "Name": "Keto Chicken Salad",
+      "Price": 10,
+      "InStock": 22,
+      "PictureUrl": "",
+      "Allergies": [],
+      "Diet": ["Keto"],
+      "Calories": 350
+    },
+    {
+      "ID": 23,
+      "Name": "Baklava",
+      "Price": 5,
+      "InStock": 30,
+      "PictureUrl": "",
+      "Allergies": ["Gluten", "Nuts"],
+      "Diet": [],
+      "Calories": 300
+    },
+    {
+      "ID": 24,
+      "Name": "Paneer Tikka",
+      "Price": 9,
+      "InStock": 25,
+      "PictureUrl": "",
+      "Allergies": ["Dairy"],
+      "Diet": ["Vegetarian"],
+      "Calories": 400
+    },
+    {
+      "ID": 25,
+      "Name": "Vegan Tofu Stir Fry",
+      "Price": 12,
+      "InStock": 20,
+      "PictureUrl": "",
+      "Allergies": ["Soy"],
+      "Diet": ["Vegan"],
+      "Calories": 350
+    },
+    {
+      "ID": 26,
+      "Name": "Keto Egg Muffins",
+      "Price": 8,
+      "InStock": 15,
+      "PictureUrl": "",
+      "Allergies": ["Eggs"],
+      "Diet": ["Keto"],
+      "Calories": 200
+    },
+    {
+      "ID": 27,
+      "Name": "Hummus with Pita",
+      "Price": 6,
+      "InStock": 28,
+      "PictureUrl": "",
+      "Allergies": ["Gluten"],
+      "Diet": ["Vegetarian", "Vegan"],
+      "Calories": 300
+    },
+    {
+      "ID": 28,
+      "Name": "Fish and Chips",
+      "Price": 14,
+      "InStock": 12,
+      "PictureUrl": "",
+      "Allergies": ["Fish", "Gluten"],
+      "Diet": [],
+      "Calories": 800
+    }
+  ],
+  "drinks": [
+    {
+      "Id": 1,
+      "Name": "Coca Cola",
+      "Price": 1.5,
+      "Calories": 140,
+      "Health": ["High Sugar"]
+    },
+    {
+      "Id": 2,
+      "Name": "Orange Juice",
+      "Price": 2.0,
+      "Calories": 110,
+      "Health": ["Vitamin C"]
+    },
+    {
+      "Id": 3,
+      "Name": "Green Tea",
+      "Price": 1.0,
+      "Calories": 0,
+      "Health": ["Antioxidants"]
+    },
+    {
+      "Id": 4,
+      "Name": "Black Coffee",
+      "Price": 1.0,
+      "Calories": 5,
+      "Health": ["Low Calorie"]
+    },
+    {
+      "Id": 5,
+      "Name": "Smoothie",
+      "Price": 3.5,
+      "Calories": 200,
+      "Health": ["Vitamins", "Fiber"]
+    },
+    {
+      "Id": 6,
+      "Name": "Water",
+      "Price": 0.5,
+      "Calories": 0,
+      "Health": ["Hydration"]
+    },
+    {
+      "Id": 7,
+      "Name": "Lemonade",
+      "Price": 2.0,
+      "Calories": 120,
+      "Health": ["Vitamin C"]
+    },
+    {
+      "Id": 8,
+      "Name": "Milkshake",
+      "Price": 3.0,
+      "Calories": 300,
+      "Health": ["Calcium"]
+    },
+    {
+      "Id": 9,
+      "Name": "Herbal Tea",
+      "Price": 1.5,
+      "Calories": 0,
+      "Health": ["Relaxation"]
+    },
+    {
+      "Id": 10,
+      "Name": "Energy Drink",
+      "Price": 2.5,
+      "Calories": 150,
+      "Health": ["Caffeine"]
+    },
+    {
+      "Id": 11,
+      "Name": "Protein Shake",
+      "Price": 4.0,
+      "Calories": 250,
+      "Health": ["Protein"]
+    },
+    {
+      "Id": 12,
+      "Name": "Coconut Water",
+      "Price": 2.5,
+      "Calories": 60,
+      "Health": ["Electrolytes"]
+    }
+  ]
+}
