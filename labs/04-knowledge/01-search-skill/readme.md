@@ -23,11 +23,13 @@ You'll develop your search app using Visual Studio Code. The code files for your
 
 1. In a web browser, open the Azure portal at `https://portal.azure.com`, and sign in using the Microsoft account associated with your Azure subscription.
 2. In the top search bar, search for _Azure AI services_, select **Azure AI services multi-service account**, and create an Azure AI services multi-service account resource with the following settings:
+
    - **Subscription**: _Your Azure subscription_
    - **Resource group**: _Choose or create a resource group (if you are using a restricted subscription, you may not have permission to create a new resource group - use the one provided)_
    - **Region**: _Choose from available regions geographically close to you_
    - **Name**: _Enter a unique name_
    - **Pricing tier**: Standard S0
+
 3. Once deployed, go to the resource and on the **Overview** page, note the **Subscription ID** and **Location**. You will need these values, along with the name of the resource group in subsequent steps.
 4. In Visual Studio Code, expand the **Labfiles/02-search-skill** folder and select **setup.cmd**. You will use this batch script to run the Azure command line interface (CLI) commands required to create the Azure resources you need.
 5. Right-click the the **02-search-skill** folder and select **Open in Integrated Terminal**.
@@ -52,7 +54,7 @@ You'll develop your search app using Visual Studio Code. The code files for your
     ./setup
     ```
 
-    > **Note**: If the script fails, ensure you saved it with the correct variable names and try again.
+    > **Note**: I provided an alternative script `setup.azcli` that is easier to read. It uses [Azure CLI Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.azurecli) to create the resources. You can use this script instead of setup.cmd if you prefer. It also provisions the Function Apps (Node and Python).
 
 12. When the script completes, review the output it displays and note the following information about your Azure resources (you will need these values later):
 
@@ -155,23 +157,32 @@ To implement the word count functionality as a custom skill, you'll create an Az
 npm install -g azure-functions-core-tools@4 --unsafe-perm true
 ```
 
-3. Create a folder `custom-skill-func` in your local machine
+3. Create a folder `custom-skills-func` in your local machine
 
 ```powershell
-mkdir custom-skill-func
-cd custom-skill-func
+mkdir custom-skills-func
+cd custom-skills-func
 ```
 
-4. Create a new function app
+4. Create a new function app using node:
 
 ```powershell
 func init --worker-runtime node
 func new --template "HTTP trigger" --name wordcount --authlevel function
 ```
 
-4. Wait for the _wordcount_ function to be created. Then in its page, select the **Code + Test** tab.
+4b: Create a new function app using python:
 
-5. Replace the default function code with the following code:
+```powershell
+func init --worker-runtime python
+func new --template "HTTP trigger" --name wordcount --authlevel function
+```
+
+5. Wait for the _wordcount_ function to be created. Then in its page, select the **Code + Test** tab.
+
+6. Replace the default function code with the following code:
+
+Node version:
 
 ```javascript
 const { app } = require('@azure/functions');
@@ -252,6 +263,91 @@ app.http('wordcount', {
     }
   },
 });
+```
+
+Python version:
+
+```python
+import azure.functions as func
+import logging
+import json
+
+# Array of stop words to be ignored
+stopwords = ['', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
+        "youre", "youve", "youll", "youd", 'your', 'yours', 'yourself',
+        'yourselves', 'he', 'him', 'his', 'himself', 'she', "shes", 'her',
+        'hers', 'herself', 'it', "its", 'itself', 'they', 'them',
+        'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom',
+        'this', 'that', "thatll", 'these', 'those', 'am', 'is', 'are', 'was',
+        'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do',
+        'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or',
+        'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with',
+        'about', 'against', 'between', 'into', 'through', 'during', 'before',
+        'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out',
+        'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here',
+        'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each',
+        'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not',
+        'only', 'own', 'same', 'so', 'than', 'too', 'very', 'can', 'will',
+        'just', "dont", 'should', "shouldve", 'now', "arent", "couldnt",
+        "didnt", "doesnt", "hadnt", "hasnt", "havent", "isnt", "mightnt", "mustnt",
+        "neednt", "shant", "shouldnt", "wasnt", "werent", "wont", "wouldnt"]
+
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+@app.route(route="wordcount", methods=["POST"])
+def wordcount(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+
+    try:
+        body = req.get_json()
+
+        if body and 'values' in body:
+            vals = body['values']
+            res = {'values': []}
+
+            for rec, val in enumerate(vals):
+                # Get the record ID and text for this input
+                res_val = {'recordId': val['recordId'], 'data': {}}
+                txt = val['data']['text']
+
+                # Remove punctuation and numerals and convert to lowercase
+                import re
+                txt = re.sub(r'[^ A-Za-z_]', '', txt).lower()
+
+                # Get an array of words
+                words = txt.split(' ')
+
+                # Count instances of non-stopwords
+                word_counts = {}
+                for word in words:
+                    if word not in stopwords:
+                        word_counts[word] = word_counts.get(word, 0) + 1
+
+                # Get unique words (not counting duplicates)
+                unique_words = list(word_counts.keys())
+
+                # Add the filtered words to the response
+                res_val['data']['text'] = unique_words
+
+                res['values'].append(res_val)
+
+            return func.HttpResponse(
+                json.dumps(res),
+                mimetype="application/json"
+            )
+        else:
+            return func.HttpResponse(
+                json.dumps({"errors": [{"message": "Invalid input"}]}),
+                status_code=400,
+                mimetype="application/json"
+            )
+    except ValueError:
+        return func.HttpResponse(
+            json.dumps({"errors": [{"message": "Invalid input"}]}),
+            status_code=400,
+            mimetype="application/json"
+        )
+
 ```
 
 7. Execute `test-func.ps1` or test-func.http

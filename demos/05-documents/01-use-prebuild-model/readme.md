@@ -23,12 +23,12 @@ Before you can call the Azure AI Document Intelligence service, you must create 
 Let's start by using the **Azure AI Document Intelligence Studio** and the Read model to analyze a document with multiple languages. You'll connect Azure AI Document Intelligence Studio to the resource you just created to perform the analysis:
 
 1. Open a new browser tab and go to the **Azure AI Document Intelligence Studio** at [https://documentintelligence.ai.azure.com/studio](https://documentintelligence.ai.azure.com/studio).
-1. Under **Document Analysis**, select the **Read** tile.
+1. Under **Document Analysis**, select the **OCR / Read** tile.
 1. If you are asked to sign into your account, use your Azure credentials.
 1. If you are asked which Azure AI Document Intelligence resource to use, select the subscription and resource name you used when you created the Azure AI Document Intelligence resource.
 1. In the list of documents on the left, select **read-german.pdf**.
 
-   ![Screenshot showing the Read page in Azure AI Document Intelligence Studio.](../media/read-german-sample.png#lightbox)
+   ![Screenshot showing the Read page in Azure AI Document Intelligence Studio.](/labs/media/read-german-sample.png#lightbox)
 
 1. At the top-left, select **Analyze options**, then enable the **Language** check-box (under **Optional detection**) in the **Analyze options** pane and click on **Save**.
 1. At the top-left, select **Run Analysis**.
@@ -36,7 +36,7 @@ Let's start by using the **Azure AI Document Intelligence Studio** and the Read 
 1. Select the **Result** tab. This tab displays the extracted JSON code.
 1. Scroll to the bottom of the JSON code in the **Result** tab. Notice that the read model has detected the language of each span indicated by `locale`. Most spans are in German (language code `de`) but you can find other language codes in the spans (e.g. English - language code `en` - in one of the last span).
 
-   ![Screenshot showing the detection of language for two spans in the results from the read model in Azure AI Document Intelligence Studio.](../media/language-detection.png#lightbox)
+   ![Screenshot showing the detection of language for two spans in the results from the read model in Azure AI Document Intelligence Studio.](/labs/media/language-detection.png#lightbox)
 
 ## Prepare to develop an app in Visual Studio Code
 
@@ -60,7 +60,7 @@ Applications for both C# and Python have been provided, as well as a sample pdf 
 
 1. Examine the following invoice and note some of its fields and values. This is the invoice that your code will analyze.
 
-   ![Screenshot showing a sample invoice document.](../media/sample-invoice.png#lightbox)
+   ![Screenshot showing a sample invoice document.](/labs/media/sample-invoice.png#lightbox)
 
 1. In Visual Studio Code, in the **Explorer** pane, browse to the **Labfiles/01-prebuild-models** folder and expand the **CSharp** or **Python** folder depending on your language preference. Each folder contains the language-specific files for an app into which you're you're going to integrate Azure Document Intelligence functionality.
 
