@@ -1,19 +1,7 @@
----
-page_type: sample
-languages:
-- azdeveloper
-- bicep
-products:
-- azure
-urlFragment: azd-aistudio-starter
-name: Azure AI Studio starter template
-description: Creates an Azure AI Studio hub, project and required dependent resources including Azure OpenAI Service, Cognitive Search and more.
----
-<!-- YAML front-matter schema: https://review.learn.microsoft.com/en-us/help/contribute/samples/process/onboarding?branch=main#supported-metadata-fields-for-readmemd -->
-
 # Azure AI Studio Starter Template
 
-### Quickstart
+## Quickstart
+
 To learn how to get started with any template, follow the steps in [this quickstart](https://learn.microsoft.com/azure/developer/azure-developer-cli/get-started?tabs=localinstall&pivots=programming-language-nodejs) with this template(`Azure-Samples/azd-aistudio-starter`)
 
 This quickstart will show you how to authenticate on Azure, initialize using a template, provision infrastructure and deploy code on Azure via the following commands:
@@ -37,7 +25,7 @@ This template creates everything you need to get started with Azure AI Studio:
 - [AI Project](https://learn.microsoft.com/azure/ai-studio/how-to/create-projects)
 - [OpenAI Service](https://learn.microsoft.com/azure/ai-services/openai/)
 - [Online Endpoint](https://learn.microsoft.com/azure/machine-learning/concept-endpoints-online?view=azureml-api-2)
-- [AI Search Service](https://learn.microsoft.com/azure/search/) *(Optional, enabled by default)*
+- [AI Search Service](https://learn.microsoft.com/azure/search/) _(Optional, enabled by default)_
 
 The provisioning will also deploy any models specified within the `./infra/ai.yaml`.
 
@@ -47,8 +35,8 @@ The template also includes dependent resources required by all AI Hub resources:
 
 - [Storage Account](https://learn.microsoft.com/azure/storage/blobs/)
 - [Key Vault](https://learn.microsoft.com/azure/key-vault/general/)
-- [Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview) *(Optional, enabled by default)*
-- [Container Registry](https://learn.microsoft.com/azure/container-registry/) *(Optional, enabled by default)*
+- [Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview) _(Optional, enabled by default)_
+- [Container Registry](https://learn.microsoft.com/azure/container-registry/) _(Optional, enabled by default)_
 
 ### Optional Configuration
 
