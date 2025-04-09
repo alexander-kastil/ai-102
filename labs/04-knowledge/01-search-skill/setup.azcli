@@ -21,11 +21,6 @@ key=$(az storage account keys list \
 
 echo "Key: $key"
 
-az storage account blob-service-properties update \
-    --account-name $storage \
-    --allow-blob-public-access true \
-    --account-key $key
-
 az storage container create \
     --account-name $storage \
     --name margies \
