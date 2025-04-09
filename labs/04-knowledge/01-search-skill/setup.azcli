@@ -3,6 +3,7 @@ env=dev
 grp=ai-102-$env
 loc=westeurope
 storage=ai102storage$env
+service=ai-102-$loc-$env
 aisearch=aisearchai102$env$RANDOM
 
 az storage account create \
@@ -38,6 +39,7 @@ az storage blob upload-batch \
     --account-key $key \
     --overwrite
 
+az cognitiveservices account create --name $service -g $grp --kind CognitiveServices --sku S0 -l $loc    
 
 az search service create \
     --name $aisearch \
