@@ -15,7 +15,7 @@ if (useLocal != "true")
     var model = configuration["SemanticKernel:DeploymentModel"];
     var endpoint = configuration["SemanticKernel:Endpoint"];
     var resourceKey = configuration["SemanticKernel:ApiKey"];
-    
+
     kernelBuilder.Services.AddAzureOpenAIChatCompletion(
     model,
     endpoint,
@@ -27,7 +27,7 @@ else
     var localEndpoint = configuration["LocalModelSettings:Endpoint"];
     var url = $"{localEndpoint}/v1/chat/completions";
     HttpClient client = new(new LocalServerClientHandler(url));
-    
+
     kernelBuilder.AddOpenAIChatCompletion("local-model", url, "not required", httpClient: client);
 }
 
