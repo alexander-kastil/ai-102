@@ -1,6 +1,6 @@
 # AI-102: Designing and Implementing a Microsoft Azure AI Solution
 
-Companion Material for Class Delivery by [Alexander Kastil](https://www.integrations.at/kontakt-impressum.aspx) containing:
+Companion Material for Class Delivery by [Alexander Kastil](https://www.linkedin.com/in/alexander-kastil-3bb26511a/) containing:
 
 - [Instructor Demos](./demos)
 - [Requirements / tooling](./tooling)
