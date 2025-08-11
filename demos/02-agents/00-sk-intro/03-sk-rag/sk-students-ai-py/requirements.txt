@@ -1,0 +1,6 @@
+python-dotenv
+azure-identity
+semantic-kernel
+flask
+flask-sqlalchemy
+sqlalchemy
