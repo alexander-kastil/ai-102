@@ -1,0 +1,25 @@
+env=dev
+grp=ai-102-$env
+loc=eastus
+service=customvision-ai-us-102-$env
+storage=ai102storage$env
+
+SUBSCRIPTION_KEY=$(az cognitiveservices account keys list -n $service -g $grp --query 'key1' -o tsv)
+echo "Subscription key: $SUBSCRIPTION_KEY"
+ENDPOINT="https://$loc.api.cognitive.microsoft.com/"
+THUMBNAIL_WIDTH=100
+THUMBNAIL_HEIGHT=100
+FILE="weinberg.jpg"
+THUMBNAIL_FILE="weinberg-thumb.jpg"
+
+key=$(az storage account keys list -g $grp -n $storage --query '[0].value' -o tsv)
+az storage blob upload --account-name $storage --container-name images --name $FILE --file $FILE --account-key $key
+
+IMAGE_URL=$(az storage blob url --account-name $storage --container-name images --name $FILE --account-key $key -o tsv)
+
+# API call
+curl -H "Ocp-Apim-Subscription-Key: $SUBSCRIPTION_KEY" \
+    -H "Content-Type: application/json" \
+    "$ENDPOINT/vision/v3.2/generateThumbnail?width=$THUMBNAIL_WIDTH&height=$THUMBNAIL_HEIGHT&smartCropping=true" \
+    -d "{\"url\":\"$IMAGE_URL\"}" \
+    -o "$THUMBNAIL_FILE"

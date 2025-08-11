@@ -1,0 +1,11 @@
+@endpoint = YOUR_ENDPOINT_URL
+@key = YOUR_KEY
+
+### Ask a question
+POST {{endpoint}}
+Ocp-Apim-Subscription-Key: {{key}}
+Content-Type: application/json
+
+{
+    "question": "What is a learning Path?"
+}

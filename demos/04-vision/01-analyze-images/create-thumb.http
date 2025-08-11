@@ -1,0 +1,14 @@
+@endpoint={{$processEnv ENDPOINT}}
+@subscriptionKey={{$processEnv SUBSCRIPTION_KEY}}
+@width=100
+@height=100
+@imageUrl={{$processEnv IMAGE_URL}}
+
+###
+POST {{endpoint}}/vision/v3.2/generateThumbnail?width={{width}}&height={{height}}&smartCropping=true
+Ocp-Apim-Subscription-Key: {{subscriptionKey}}
+Content-Type: application/json
+
+{
+    "url": "{{imageUrl}}"
+}

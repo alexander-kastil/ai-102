@@ -1,0 +1,17 @@
+RESOURCE_GROUP="ai-102-lang-rg"
+LOCATION="eastus"
+SERVICE_NAME="ai-102-langservice"
+SKU="F0"
+
+# Create resource group (if it doesn't exist)
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# Create Language Service resource
+az cognitiveservices account create \
+  --name $SERVICE_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --kind "Language" \
+  --sku $SKU \
+  --yes
+

@@ -1,0 +1,89 @@
+# Entity extraction using Azure Language Service
+# Variables for the service
+env=dev
+grp=ai-102-$env
+loc=westeurope
+projectName=customNERLab
+modelName=customExtractAds
+verbose=false
+
+# Get the service key and endpoint from environment or Azure CLI
+endpoint=$(az cognitiveservices account show \
+    --name $projectName \
+    --resource-group $grp \
+    --query properties.endpoint \
+    --output tsv)
+
+key=$(az cognitiveservices account keys list \
+    --name $projectName \
+    --resource-group $grp \
+    --query key1 \
+    --output tsv)
+
+# Read the input file
+textfile=${1:-"test1.txt"}
+if [ ! -f "$textfile" ]; then
+    echo -e "\nError reading provided file, please verify file exists\n"
+    exit 1
+fi
+contents=$(cat "$textfile")
+
+# Construct the JSON payload
+json_data="{
+    \"tasks\": {
+        \"customEntityRecognitionTasks\": [{
+            \"parameters\": {
+                \"project-name\": \"$projectName\",
+                \"deployment-name\": \"$modelName\"
+            }
+        }]
+    },
+    \"analysisInput\": {
+        \"documents\": [{
+            \"id\": \"document_extractEntities\",
+            \"text\": \"$contents\"
+        }]
+    }
+}"
+
+# Call the REST API using az rest
+echo -e "\nSubmitting entity recognition task\n"
+response=$(az rest \
+    --method POST \
+    --uri "${endpoint}text/analytics/v3.2-preview.2/analyze" \
+    --headers "Content-Type=application/json" "Ocp-Apim-Subscription-Key=$key" \
+    --body "$json_data")
+
+# Get the operation URL from response headers
+operation_url=$(echo "$response" | jq -r '.headers."Operation-Location"')
+
+if [ "$verbose" = true ]; then
+    echo -e "\nResponse header: $operation_url\n"
+fi
+
+# Poll for results
+echo "Getting results..."
+status="notStarted"
+while [ "$status" != "succeeded" ]; do
+    result=$(az rest \
+        --method GET \
+        --uri "$operation_url" \
+        --headers "Ocp-Apim-Subscription-Key=$key")
+    status=$(echo "$result" | jq -r '.status')
+    sleep 1
+done
+echo "...Done"
+
+if [ "$verbose" = true ]; then
+    echo -e "\nGET JSON Response:\n$result\n"
+fi
+
+# Process and display results
+echo "$result" | jq -c '.tasks.customEntityRecognitionTasks[0].results.documents[] | .entities[]' | while read -r entity; do
+    category=$(echo "$entity" | jq -r '.category')
+    text=$(echo "$entity" | jq -r '.text')
+    confidence=$(echo "$entity" | jq -r '.confidenceScore')
+    echo -e "\nEntity Category: $category"
+    echo "Entity Text: $text"
+    echo "Confidence: $confidence"
+done

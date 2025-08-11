@@ -1,0 +1,4 @@
+Support ticket: 46cb89
+Submitted by: alexander.kastil@integrations.at
+Description:
+My laptop is in an endless boot loop
