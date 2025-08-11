@@ -3,7 +3,8 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.azure_open_ai import AzureChatCompletion
+from semantic_kernel.connectors.ai.azure_ai_inference import AzureAIInferenceChatCompletion
+from semantic_kernel.connectors.ai.azure_ai_inference.azure_ai_inference_prompt_execution_settings import AzureAIInferencePromptExecutionSettings
 from semantic_kernel.contents import ChatHistory
 import asyncio
 
@@ -50,8 +51,8 @@ def initialize_semantic_kernel():
         raise ValueError("Missing required environment variables for Semantic Kernel")
     
     kernel = Kernel()
-    chat_completion = AzureChatCompletion(
-        deployment_name=model,
+    chat_completion = AzureAIInferenceChatCompletion(
+        ai_model_id=model,
         api_key=api_key,
         endpoint=endpoint,
         service_id="chat-gpt"
@@ -74,10 +75,15 @@ async def get_ai_response(question: str, student_context: str = None) -> str:
     history.add_system_message(system_prompt)
     history.add_user_message(question)
     
+    execution_settings = AzureAIInferencePromptExecutionSettings(
+        max_tokens=1000,
+        temperature=0.7
+    )
+    
     try:
         response = await chat_completion.get_chat_message_contents(
             chat_history=history,
-            settings=None,
+            settings=execution_settings,
             kernel=kernel
         )
         return response[0].content if response else "I'm sorry, I couldn't generate a response."

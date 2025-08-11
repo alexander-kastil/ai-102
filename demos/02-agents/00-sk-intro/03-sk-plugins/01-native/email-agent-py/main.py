@@ -2,10 +2,10 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.azure_open_ai import AzureChatCompletion
+from semantic_kernel.connectors.ai.azure_ai_inference import AzureAIInferenceChatCompletion
+from semantic_kernel.connectors.ai.azure_ai_inference.azure_ai_inference_prompt_execution_settings import AzureAIInferencePromptExecutionSettings
 from semantic_kernel.contents import ChatHistory
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
-from semantic_kernel.connectors.ai.function_call_behavior import FunctionCallBehavior
+from semantic_kernel.connectors.ai import FunctionChoiceBehavior
 from common.config import AppConfig
 from plugins.email_plugin import EmailPlugin
 
@@ -27,9 +27,9 @@ async def main():
     # Create kernel
     kernel = Kernel()
     
-    # Add Azure OpenAI chat completion service
-    chat_completion = AzureChatCompletion(
-        deployment_name=config.deployment_model,
+    # Add Azure AI Inference chat completion service
+    chat_completion = AzureAIInferenceChatCompletion(
+        ai_model_id=config.deployment_model,
         api_key=config.api_key,
         endpoint=config.endpoint,
         service_id="chat-gpt"
@@ -63,33 +63,29 @@ async def main():
         history.add_user_message(user_input)
         
         # Configure execution settings for function calling
-        execution_settings = OpenAIChatPromptExecutionSettings(
-            tool_choice="auto",
-            function_call_behavior=FunctionCallBehavior.EnableFunctions(
-                auto_invoke=True, filters={}
-            )
+        execution_settings = AzureAIInferencePromptExecutionSettings(
+            max_tokens=1000,
+            temperature=0.7,
+            function_choice_behavior=FunctionChoiceBehavior.Auto()
         )
         
         try:
-            # Get streaming response
-            response = chat_completion.get_streaming_chat_message_contents(
+            # Get response (non-streaming due to function calls)
+            response = await chat_completion.get_chat_message_contents(
                 chat_history=history,
                 settings=execution_settings,
                 kernel=kernel
             )
             
-            # Stream and collect the response
-            full_message = ""
-            async for chunk in response:
-                if chunk[0].content:
-                    print(chunk[0].content, end="", flush=True)
-                    full_message += chunk[0].content
-            
-            print()  # New line after streaming
-            
-            # Add assistant message to history
-            if full_message:
-                history.add_assistant_message(full_message)
+            if response:
+                full_message = response[0].content
+                print(full_message)
+                
+                # Add assistant message to history
+                if full_message:
+                    history.add_assistant_message(full_message)
+            else:
+                print("No response received.")
                 
         except Exception as e:
             print(f"Error: {str(e)}")

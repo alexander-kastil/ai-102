@@ -1,6 +1,7 @@
 python-dotenv
 azure-identity
 semantic-kernel
+azure-ai-inference
 flask
 flask-sqlalchemy
 sqlalchemy

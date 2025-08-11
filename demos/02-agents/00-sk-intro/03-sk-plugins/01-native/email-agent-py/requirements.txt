@@ -1,6 +1,4 @@
 python-dotenv
 azure-identity
 semantic-kernel
-msgraph-core
-azure-identity
-microsoft-graph-api
+azure-ai-inference

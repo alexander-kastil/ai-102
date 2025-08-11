@@ -3,9 +3,9 @@ import os
 import subprocess
 from dotenv import load_dotenv
 from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.azure_open_ai import AzureChatCompletion
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
-from semantic_kernel.connectors.ai.function_call_behavior import FunctionCallBehavior
+from semantic_kernel.connectors.ai.azure_ai_inference import AzureAIInferenceChatCompletion
+from semantic_kernel.connectors.ai.azure_ai_inference.azure_ai_inference_prompt_execution_settings import AzureAIInferencePromptExecutionSettings
+from semantic_kernel.connectors.ai import FunctionChoiceBehavior
 from semantic_kernel.agents import ChatCompletionAgent
 from semantic_kernel.contents import ChatHistory
 
@@ -44,9 +44,9 @@ async def main():
     # Create kernel
     kernel = Kernel()
     
-    # Add Azure OpenAI chat completion service
-    chat_completion = AzureChatCompletion(
-        deployment_name=model,
+    # Add Azure AI Inference chat completion service
+    chat_completion = AzureAIInferenceChatCompletion(
+        ai_model_id=model,
         api_key=api_key,
         endpoint=endpoint,
         service_id="chat-gpt"
@@ -54,11 +54,10 @@ async def main():
     kernel.add_service(chat_completion)
     
     # Configure execution settings
-    execution_settings = OpenAIChatPromptExecutionSettings(
+    execution_settings = AzureAIInferencePromptExecutionSettings(
         temperature=0,
-        function_call_behavior=FunctionCallBehavior.EnableFunctions(
-            auto_invoke=True, filters={}
-        )
+        max_tokens=1000,
+        function_choice_behavior=FunctionChoiceBehavior.Auto()
     )
     
     # Test basic prompt
