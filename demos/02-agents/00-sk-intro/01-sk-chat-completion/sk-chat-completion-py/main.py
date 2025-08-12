@@ -41,18 +41,10 @@ class WeatherPlugin:
 async def main():
     kernel = Kernel()
 
-    use_azure_openai = False
     service_id = "function_calling"
-    if use_azure_openai:
-        # Please make sure your AzureOpenAI Deployment allows for function calling
-        ai_service = AzureChatCompletion(
-            service_id=service_id,
-        )
-    else:
-        ai_service = OpenAIChatCompletion(
-            service_id=service_id,
-            ai_model_id="gpt-3.5-turbo",
-        )
+    ai_service = AzureChatCompletion(
+        service_id=service_id,
+    )
     kernel.add_service(ai_service)
 
     kernel.add_plugin(TimePlugin(), plugin_name="time")
