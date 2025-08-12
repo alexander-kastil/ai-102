@@ -6,6 +6,8 @@
 
 ## Deploy a custom MCP
 
+- Publish hr-mct-server to Azure App Service
+
 - Test hr-mct-server using MCP Inspector:
 
   ```bash

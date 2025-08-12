@@ -39,3 +39,6 @@ ENV ASPNETCORE_URLS=http://+:80
 
 # Define the entry point for the container
 ENTRYPOINT ["dotnet", "hr-mcp-server.dll"]
+
+# docker build -t hr-mcp-server .
+# docker run -d -p 7050:80 hr-mcp-server

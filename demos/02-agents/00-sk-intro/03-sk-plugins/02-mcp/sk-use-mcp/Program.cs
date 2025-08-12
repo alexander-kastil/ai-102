@@ -1,6 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -26,11 +24,13 @@ await using var mcpClient = await McpClientFactory.CreateAsync(new StdioClientTr
 }));
 
 // Retrieve the list of tools available on the GitHub server
+Console.WriteLine($"\n\nThe following tools are registered:");
 var tools = await mcpClient.ListToolsAsync().ConfigureAwait(false);
 foreach (var tool in tools)
 {
     Console.WriteLine($"{tool.Name}: {tool.Description}");
 }
+Console.WriteLine($"\n\n*******");
 
 // Prepare and build kernel with the MCP tools as Kernel functions
 var kernelBuilder = Kernel.CreateBuilder();
@@ -53,6 +53,7 @@ OpenAIPromptExecutionSettings executionSettings = new()
 var prompt = $"Summarize the last commit to the {repo} repository?";
 var result = await kernel.InvokePromptAsync(prompt, new(executionSettings)).ConfigureAwait(false);
 Console.WriteLine($"\n\n{prompt}\n{result}");
+Console.WriteLine($"\n\n*******");
 
 // Define the agent
 ChatCompletionAgent agent = new()
@@ -66,15 +67,10 @@ ChatCompletionAgent agent = new()
 // Respond to user input, invoking functions where appropriate.
 ChatMessageContent response = await agent.InvokeAsync(prompt).FirstAsync();
 Console.WriteLine($"\n\nResponse from GitHubAgent:\n{response.Content}");
-
-// Summarize the latest commit in the alexander-kastil/github-copilot-skills-fest repository.
-prompt = $"Summarize the latest commit in the {repo} repository?";
-response = await agent.InvokeAsync(prompt).FirstAsync();
-Console.WriteLine($"\n\nResponse from GitHubAgent:\n{response.Content}");
+Console.WriteLine($"\n\n*******");
 
 
 prompt = $"Summarize the last issue in the {repo} repository?";
 response = await agent.InvokeAsync(prompt).FirstAsync();
 Console.WriteLine($"\n\nResponse from GitHubAgent:\n{response.Content}");
-
-//
+Console.WriteLine($"\n\n*******");
