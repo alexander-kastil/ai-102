@@ -7,3 +7,9 @@
 - Extract form data with Azure Document Intelligence prebuilt models
 - Extract form data with Azure Document Intelligence custom models
 - Create a knowledge mining solution with Azure AI Search
+
+## Links & Resources
+
+[Content Understanding](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/overview)
+
+[Document Intelligence Studio](https://documentintelligence.ai.azure.com/)
