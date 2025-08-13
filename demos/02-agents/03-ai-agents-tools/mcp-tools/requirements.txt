@@ -1,0 +1,6 @@
+# Use --pre with pip to allow pre-release versions for these packages
+python-dotenv
+azure-identity
+uvicorn
+azure-ai-projects
+mcp
