@@ -1,0 +1,45 @@
+openapi: 3.0.4
+info:
+  title: weather - Subset
+  version: '1.0'
+servers:
+  - url: https://copilot-weather-api.azurewebsites.net
+paths:
+  /weatherforecast:
+    post:
+      tags:
+        - weather
+      operationId: GetWeatherForecast
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city:
+                  type: string
+                  nullable: true
+                date:
+                  type: string
+                  format: date
+              additionalProperties: false
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  city:
+                    type: string
+                    nullable: true
+                  weather:
+                    type: string
+                    nullable: true
+                  date:
+                    type: string
+                    format: date
+                additionalProperties: false
+components: { }
