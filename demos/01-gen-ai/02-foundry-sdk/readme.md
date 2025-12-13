@@ -1,13 +1,4 @@
-# Azure Foundry SDK
+# Explore and deploy models from the model catalog in Azure AI Studio
 
-[Azure Foundry SDK](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/sdk-overview?pivots=programming-language-csharp)
-
-## Demo
-
-Create & Activate Python virtual environment, Install requirements:
-
-```bash
-python -m venv .venv
-.venv\Scripts\Activate
-pip install -r requirements.txt
-```
+- Explore & Deploy Models from the Model Catalog
+- Improve the performance of a language model
