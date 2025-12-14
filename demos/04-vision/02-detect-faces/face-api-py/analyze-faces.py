@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import os
 import sys
 from PIL import Image, ImageDraw
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 from matplotlib import pyplot as plt
 
 # Import namespaces
@@ -12,19 +14,19 @@ from azure.core.credentials import AzureKeyCredential
 def main():
 
     # Clear the console
-    os.system('cls' if os.name=='nt' else 'clear')
+    # os.system('cls' if os.name=='nt' else 'clear')
+    print("Script starting...")
 
     try:
         # Get Configuration Settings
         load_dotenv()
-        cog_endpoint = os.getenv('AI_SERVICE_ENDPOINT')
-        cog_key = os.getenv('AI_SERVICE_KEY')
+        cog_endpoint = os.getenv('VISION_ENDPOINT')
+        cog_key = os.getenv('VISION_KEY')
 
         # Get image
         image_file = 'images/face1.jpg'
         if len(sys.argv) > 1:
             image_file = sys.argv[1]
-
 
         # Authenticate Face client
         face_client = FaceClient(
@@ -34,20 +36,20 @@ def main():
 
         # Specify facial features to be retrieved
         features = [FaceAttributeTypeDetection01.HEAD_POSE,
-                    FaceAttributeTypeDetection01.OCCLUSION,
-                    FaceAttributeTypeDetection01.ACCESSORIES]
+                    FaceAttributeTypeDetection01.OCCLUSION]
 
         # Get faces
         with open(image_file, mode="rb") as image_data:
             detected_faces = face_client.detect(
                 image_content=image_data.read(),
-                detection_model=FaceDetectionModel.DETECTION01,
-                recognition_model=FaceRecognitionModel.RECOGNITION01,
+                detection_model=FaceDetectionModel.DETECTION03,
+                recognition_model=FaceRecognitionModel.RECOGNITION04,
                 return_face_id=False,
                 return_face_attributes=features,
             )
 
         face_count = 0
+        print(f'Detected {len(detected_faces)} total faces')
         if len(detected_faces) > 0:
             print(len(detected_faces), 'faces detected.')
             for face in detected_faces:
@@ -61,15 +63,14 @@ def main():
                 print(' - Forehead occluded?: {}'.format(face.face_attributes.occlusion["foreheadOccluded"]))
                 print(' - Eye occluded?: {}'.format(face.face_attributes.occlusion["eyeOccluded"]))
                 print(' - Mouth occluded?: {}'.format(face.face_attributes.occlusion["mouthOccluded"]))
-                print(' - Accessories:')
-                for accessory in face.face_attributes.accessories:
-                    print('   - {}'.format(accessory.type))
                 # Annotate faces in the image
                 annotate_faces(image_file, detected_faces)
  
 
     except Exception as ex:
-        print(ex)
+        print(f"Error occurred: {ex}")
+        import traceback
+        traceback.print_exc()
 
 def annotate_faces(image_file, detected_faces):
     print('\nAnnotating faces in image...')
