@@ -1,3 +1,0 @@
-python-dotenv
-azure.core
-azure.ai.language.questionanswering
