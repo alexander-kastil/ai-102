@@ -1,7 +1,6 @@
 from pydoc import text
 from dotenv import load_dotenv
 import os
-# Import namespaces
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.textanalytics import TextAnalyticsClient
 
@@ -20,7 +19,9 @@ def main():
         reviews_folder = 'reviews'
         for file_name in os.listdir(reviews_folder):
             # Read the file contents
-            print('\n-------------\n' + file_name)
+            banner_title = f" Review: {file_name} "
+            banner_line = "=" * max(40, len(banner_title) + 4)
+            print(f"\n{banner_line}\n{banner_title}\n{banner_line}")
             text = open(os.path.join(reviews_folder, file_name), encoding='utf8').read()
             print('\n' + text)
 
