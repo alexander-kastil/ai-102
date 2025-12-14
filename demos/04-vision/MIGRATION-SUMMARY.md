@@ -60,19 +60,28 @@ Migration guide for 4 Python projects in `demos/04-vision` to Azure AI Foundry w
 
 ---
 
-### 4. DALL-E Image Generator (`05-generate-images/dalle-client-py`)
+### 4. Image Generator - Upgrade to GPT-image-1 (`05-generate-images/dalle-client-py`)
 
-**Status**: ✅ Ready to Migrate  
+**Status**: ✅ Ready to Migrate (+ Upgrade)  
 **Current Service**: Azure OpenAI DALL-E 3  
-**Migration Type**: Full Foundry integration  
-**Model Deployments Needed**: ✅ DALL-E 3 model deployment
+**Recommended Upgrade**: **GPT-image-1** (State-of-the-art, April 2025)
+**Migration Type**: Full Foundry integration + Model upgrade  
+**Model Deployments Needed**: ✅ GPT-image-1 model deployment (limited access preview)
+
+**Why Upgrade to GPT-image-1?**:
+
+- ✅ **Better Text Rendering**: Excellent text in images (DALL-E 3 weakness)
+- ✅ **Image Editing**: New capability to edit existing images
+- ✅ **Superior Instruction Following**: Better prompt understanding
+- ✅ **Inpainting**: Fill masked image regions (new capability)
 
 **Key Changes**:
 
 - Switch from direct `AzureOpenAI` client to `AIProjectClient`
 - Update environment variables to use `PROJECT_ENDPOINT`
 - Simplify authentication with `DefaultAzureCredential`
-- **Deploy DALL-E 3 model** in Foundry project
+- **Deploy GPT-image-1 model** (request access: [aka.ms/oai/gptimage1access](https://aka.ms/oai/gptimage1access))
+- Update API version to 2025-04-01-preview
 
 **Documentation**: See [PROJECT-UPGRADE.md](05-generate-images/dalle-client-py/PROJECT-UPGRADE.md)
 
@@ -97,12 +106,12 @@ PROJECT_ENDPOINT=https://pro-code-agents-resource.services.ai.azure.com/api/proj
 MODEL_DEPLOYMENT=gpt-4o
 ```
 
-### DALL-E Generator
+### Image Generator (GPT-image-1)
 
 ```bash
 PROJECT_ENDPOINT=https://pro-code-agents-resource.services.ai.azure.com/api/projects/pro-code-agents
-MODEL_DEPLOYMENT=dalle3
-API_VERSION=2024-10-21
+MODEL_DEPLOYMENT=gpt-image-1
+API_VERSION=2025-04-01-preview
 ```
 
 ---
@@ -130,11 +139,14 @@ API_VERSION=2024-10-21
 - Vision API version: 2024-10-21 or later
 - Capability: Must support vision features
 
-#### DALL-E Image Generator
+#### Image Generator
 
-- ✅ DALL-E 3 model deployment in Foundry project
+- ✅ GPT-image-1 model deployment in Foundry project (limited access preview)
 - Deployment name: Configure in `MODEL_DEPLOYMENT`
+- Access Request: [aka.ms/oai/gptimage1access](https://aka.ms/oai/gptimage1access)
+- Approval Timeline: Typically 24-48 hours
 - Quota: Ensure sufficient image generation quota
+- API Version: 2025-04-01-preview
 
 ---
 
@@ -187,12 +199,12 @@ For projects requiring model deployments:
 
 ## Model Deployment Requirements Summary
 
-| Project        | Model      | Type    | Required | Deployment Name |
-| -------------- | ---------- | ------- | -------- | --------------- |
-| Image Analysis | Vision API | Service | ❌ No    | N/A             |
-| Face Detection | Face API   | Service | ❌ No    | N/A             |
-| Gen AI Vision  | GPT-4o     | Model   | ✅ Yes   | `gpt-4o`        |
-| DALL-E         | DALL-E 3   | Model   | ✅ Yes   | `dalle3`        |
+| Project         | Model       | Type    | Required | Deployment Name |
+| --------------- | ----------- | ------- | -------- | --------------- |
+| Image Analysis  | Vision API  | Service | ❌ No    | N/A             |
+| Face Detection  | Face API    | Service | ❌ No    | N/A             |
+| Gen AI Vision   | GPT-4o      | Model   | ✅ Yes   | `gpt-4o`        |
+| Image Generator | GPT-image-1 | Model   | ✅ Yes   | `gpt-image-1`   |
 
 ### How to Deploy Models
 
@@ -216,13 +228,14 @@ az cognitiveservices account deployment create \
   --model-name gpt-4o \
   --model-version "2024-08-06"
 
-# Deploy DALL-E 3
+# Deploy GPT-image-1 (requires limited access)
+# Request access first at: https://aka.ms/oai/gptimage1access
 az cognitiveservices account deployment create \
   --resource-group <rg-name> \
   --name <foundry-resource> \
-  --deployment-id dalle3 \
-  --model-name dalle3 \
-  --model-version "3.0"
+  --deployment-id gpt-image-1 \
+  --model-name gpt-image-1 \
+  --model-version "1.0"
 ```
 
 ---
