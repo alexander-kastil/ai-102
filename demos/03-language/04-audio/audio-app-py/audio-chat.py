@@ -12,11 +12,13 @@ def main():
         # Get configuration settings 
         load_dotenv()
         project_endpoint = os.getenv("PROJECT_ENDPOINT")
-        model_deployment =  os.getenv("MODEL_DEPLOYMENT")
+        model_deployment = os.getenv("MODEL_DEPLOYMENT")
+        api_version = os.getenv("API_VERSION")
 
         print("Configuration:")
         print(f"  Endpoint: {project_endpoint}")
-        print(f"  Model: {model_deployment}\n")
+        print(f"  Model: {model_deployment}")
+        print(f"  API Version: {api_version}\n")
 
         # Initialize prompts
         system_message = "You are an AI assistant for a produce supplier company."
@@ -24,13 +26,17 @@ def main():
 
         print("Getting a response ...\n")
 
-        # Fetch remote audio file
+        # Load local audio file
         print(f"Prompt: {prompt}\n")
-        audio_url = "https://github.com/MicrosoftLearning/mslearn-ai-language/raw/refs/heads/main/Labfiles/09-audio-chat/data/avocados.mp3"
-        print(f"Downloading audio...")
-        audio_response = requests.get(audio_url)
-        audio_response.raise_for_status()
-        audio_bytes = audio_response.content
+        audio_file = os.path.join(os.path.dirname(__file__), "avocados.mp3")
+        
+        if not os.path.exists(audio_file):
+            print(f"Error: Audio file not found at {audio_file}")
+            return
+            
+        print(f"Loading local audio file: avocados.mp3")
+        with open(audio_file, "rb") as f:
+            audio_bytes = f.read()
         audio_data = base64.b64encode(audio_bytes).decode('utf-8')
         print(f"Audio data encoded: {len(audio_data)} chars\n")
 
@@ -45,10 +51,9 @@ def main():
             "Content-Type": "application/json"
         }
         
-        # Extract resource name from endpoint and construct models endpoint
-        resource_name = project_endpoint.split('/')[2].split('.')[0]
-        base_url = f"https://{resource_name}.services.ai.azure.com"
-        api_url = f"{base_url}/models/chat/completions?api-version=2024-05-01-preview"
+        # Construct models endpoint from project endpoint
+        resource_url = project_endpoint.split('/api/')[0]
+        api_url = f"{resource_url}/models/chat/completions?api-version={api_version}"
         
         payload = {
             "model": model_deployment,
