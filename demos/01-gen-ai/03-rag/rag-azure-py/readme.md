@@ -49,12 +49,18 @@ This demo ingests a set of markdown insurance policy documents, chunks them, gen
 3. Retrieve processed documents, chunk text, generate embeddings, and upload documents.
 4. Run sample queries to validate retrieval quality.
 
-### Module Reference
+### Full Process
+
+| File                         | Purpose                                                                                                              |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `upload-policies.py`         | Reads local policy markdown files and uploads a consolidated JSON blob of processed documents to Azure Blob Storage. |
+| `create_vectorized_index.py` | Orchestrates the full pipeline: init clients, create index, process docs, embed, upload, test.                       |
+
+### Individual RAG Steps
 
 | File                             | Purpose                                                                                                              |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `upload-policies.py`             | Reads local policy markdown files and uploads a consolidated JSON blob of processed documents to Azure Blob Storage. |
-| `create_vectorized_index.py`     | Orchestrates the full pipeline: init clients, create index, process docs, embed, upload, test.                       |
 | `initialize_clients.py`          | Initializes Blob, Search, and Embeddings clients; auto-detects Azure OpenAI vs. generic inference endpoint.          |
 | `search_index_manager.py`        | Creates and manages the Azure AI Search index (vector + semantic configuration).                                     |
 | `document_retriever.py`          | Downloads and parses the processed documents JSON from Blob Storage.                                                 |
