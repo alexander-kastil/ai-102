@@ -1,5 +1,5 @@
-azure-ai-projects
-azure-ai-inference
-azure-identity
-python-dotenv
-openai
+azure-ai-projects==1.0.0
+azure-ai-inference==1.0.0b9
+azure-identity==1.25.1
+python-dotenv==1.2.1
+openai==2.7.1
