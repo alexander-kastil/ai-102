@@ -51,6 +51,21 @@ messages = [
     {"role": "system", "content": "You are a weather chatbot."},
     {"role": "user", "content": "Is it sunny in Vienna?"},
 ]
+# Helper to print a simple banner
+def _print_banner(title: str, content: str, width: int = 80) -> None:
+    line = "=" * width
+    sub = "-" * width
+    print(line)
+    print(title.center(width))
+    print(sub)
+    print(content)
+    print(line)
+
+# Clear and print banners before calling the model
+os.system('cls' if os.name == 'nt' else 'clear')
+_print_banner("System Message", messages[0]["content"]) 
+_print_banner("User Prompt", messages[1]["content"]) 
+
 response = client.chat.completions.create(
     model=MODEL_NAME,
     messages=messages,
