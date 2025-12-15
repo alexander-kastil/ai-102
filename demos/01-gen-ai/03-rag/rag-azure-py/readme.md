@@ -58,19 +58,18 @@ This demo ingests a set of markdown insurance policy documents, chunks them, gen
 
 ### Individual RAG Steps
 
-| File                             | Purpose                                                                                                              |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `upload-policies.py`             | Reads local policy markdown files and uploads a consolidated JSON blob of processed documents to Azure Blob Storage. |
-| `initialize_clients.py`          | Initializes Blob, Search, and Embeddings clients; auto-detects Azure OpenAI vs. generic inference endpoint.          |
-| `search_index_manager.py`        | Creates and manages the Azure AI Search index (vector + semantic configuration).                                     |
-| `document_retriever.py`          | Downloads and parses the processed documents JSON from Blob Storage.                                                 |
-| `text_chunker.py`                | Splits large document text into overlapping chunks for better retrieval granularity.                                 |
-| `document_processor.py`          | Orchestrates chunking and embedding generation; builds search document payloads.                                     |
-| `search_index_uploader.py`       | Handles batched upload of documents into the search index.                                                           |
-| `upload_handler.py`              | Wraps upload process and prints index stats post-ingestion.                                                          |
-| `search_tester.py`               | Executes vector/semantic style queries; includes fallback if semantic search feature isn't enabled.                  |
-| `test_search.py`                 | Provides sample insurance-related queries for quick validation.                                                      |
-| `2.document-vectorization.ipynb` | Original notebook prototype for the pipeline.                                                                        |
+| File                       | Purpose                                                                                                              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `upload-policies.py`       | Reads local policy markdown files and uploads a consolidated JSON blob of processed documents to Azure Blob Storage. |
+| `initialize_clients.py`    | Initializes Blob, Search, and Embeddings clients; auto-detects Azure OpenAI vs. generic inference endpoint.          |
+| `search_index_manager.py`  | Creates and manages the Azure AI Search index (vector + semantic configuration).                                     |
+| `document_retriever.py`    | Downloads and parses the processed documents JSON from Blob Storage.                                                 |
+| `text_chunker.py`          | Splits large document text into overlapping chunks for better retrieval granularity.                                 |
+| `document_processor.py`    | Orchestrates chunking and embedding generation; builds search document payloads.                                     |
+| `search_index_uploader.py` | Handles batched upload of documents into the search index.                                                           |
+| `upload_handler.py`        | Wraps upload process and prints index stats post-ingestion.                                                          |
+| `search_tester.py`         | Executes vector/semantic style queries; includes fallback if semantic search feature isn't enabled.                  |
+| `test_search.py`           | Provides sample insurance-related queries for quick validation.                                                      |
 
 ### Quick Start (Policies RAG)
 
