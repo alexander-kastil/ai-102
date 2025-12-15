@@ -88,18 +88,19 @@ conversation_image_url = {
 }
 
 if __name__ == "__main__":
-    # Safety evaluation
-    print("=== Content Safety Evaluation ===")
-    safety_score = safety_evaluator(conversation=conversation_image_url)
-
-    # Print all values from the safety evaluation
-    for category, score in safety_score.items():
-        print(f"{category}: {score}")
-    
     # Extract components for quality evaluations
     query = "Can you describe this image?"
     response = "The image shows a person with short dark hair wearing a blue checkered shirt. The background appears to be a wall with shadows cast on it"
     context = "You are an AI assistant that understands images."
+
+    # Relevance evaluation
+    print("\n=== Relevance Evaluation ===")
+    relevance_score = relevance_evaluator(
+        query=query,
+        response=response,
+        context=context
+    )
+    print(f"Relevance: {relevance_score}")
     
     # Groundedness evaluation
     print("\n=== Groundedness Evaluation ===")
@@ -109,12 +110,3 @@ if __name__ == "__main__":
         context=context
     )
     print(f"Groundedness: {groundedness_score}")
-    
-    # Relevance evaluation
-    print("\n=== Relevance Evaluation ===")
-    relevance_score = relevance_evaluator(
-        query=query,
-        response=response,
-        context=context
-    )
-    print(f"Relevance: {relevance_score}")
