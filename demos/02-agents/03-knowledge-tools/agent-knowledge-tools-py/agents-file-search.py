@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
 from azure.ai.agents import AgentsClient
 from azure.ai.agents.models import FileSearchToolDefinition, FileSearchToolResource, ToolResources
+from banner import print_banner
 
 def main():
 
@@ -44,8 +45,6 @@ def main():
             )
         )
         print(f"Created agent: {agent.name}, ID: {agent.id}")
-        print(f"✓ Agent is now visible in the Microsoft Foundry portal under 'Agents'")
-        print(f"  View at: {endpoint.replace('/api/projects/', '/projects/')}")
 
         # Create a thread for the conversation
         thread = agents_client.threads.create()
@@ -72,7 +71,7 @@ def main():
         # List messages
         messages = agents_client.messages.list(thread_id=thread.id)
         
-        print("\n--- Conversation ---")
+        print_banner("Conversation")
         for data_point in reversed(list(messages)):
             last_message_content = data_point.content[-1]
             if isinstance(last_message_content, dict):

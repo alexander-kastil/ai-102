@@ -6,6 +6,7 @@ from azure.identity import DefaultAzureCredential
 from azure.ai.agents import AgentsClient
 from azure.ai.agents.models import FunctionTool, ToolSet
 from function_calling_functions import user_functions
+from banner import print_banner
 
 def main(): 
 
@@ -66,6 +67,7 @@ def main():
         auto_test_prompt = os.getenv("AUTO_TEST_PROMPT")
         if auto_test_prompt:
             try:
+                print_banner(f"Prompt: {auto_test_prompt}")
                 agents_client.messages.create(
                     thread_id=thread.id,
                     role="user",
@@ -83,7 +85,7 @@ def main():
                 if msg.role == "assistant" and msg.content:
                     for content in msg.content:
                         if hasattr(content, 'text') and hasattr(content.text, 'value'):
-                            print(f"Assistant: {content.text.value}")
+                            print_banner(f"Assistant Response:\n\n{content.text.value}")
                             break
                     break
         else:
@@ -106,6 +108,7 @@ def main():
                         continue
 
                     try:
+                        print_banner(f"Prompt: {user_prompt}")
                         agents_client.messages.create(
                             thread_id=thread.id,
                             role="user",
@@ -124,7 +127,7 @@ def main():
                         if msg.role == "assistant" and msg.content:
                             for content in msg.content:
                                 if hasattr(content, 'text') and hasattr(content.text, 'value'):
-                                    print(f"Assistant: {content.text.value}")
+                                    print_banner(f"Assistant Response:\n\n{content.text.value}")
                                     break
                             break
             except KeyboardInterrupt:

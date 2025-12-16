@@ -6,6 +6,7 @@ from azure.ai.agents import AgentsClient
 from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 from azure.ai.agents.models import AzureAISearchQueryType, AzureAISearchTool, ListSortOrder, MessageRole
+from banner import print_banner
 
 # Configure UTF-8 encoding for Windows console (fixes emoji display issues)
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -68,16 +69,20 @@ def main():
         # Create thread for communication
         thread = agents_client.threads.create()
         print(f"Created thread, thread ID: {thread.id}")
+        
+        prompt = "Which policies cover a broken car side mirror?"
+        print_banner(f"Prompt: {prompt}")
 
         # Create message to thread
         message = agents_client.messages.create(
             thread_id=thread.id,
             role="user",
-            content="Which policies cover a broken car side mirror?",
+            content=prompt,
         )
         print(f"Created message, message ID: {message.id}")
 
         # Create and process agent run in thread with tools
+        print("Starting agent run...")
         run = agents_client.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
         print(f"Run finished with status: {run.status}")
 
@@ -112,22 +117,24 @@ def main():
             print(f"Agent {agent.id} preserved for examination in Azure AI Foundry")
 
         # [START populate_references_agent_with_azure_ai_search_tool]
-        # Fetch and log all messages
+        # Fetch and log only AGENT messages and print them in a banner
         messages = agents_client.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
         for message in messages:
-            if message.role == MessageRole.AGENT and message.url_citation_annotations:
+            if message.role != MessageRole.AGENT:
+                continue
+
+            placeholder_annotations = {}
+            if message.url_citation_annotations:
                 placeholder_annotations = {
                     annotation.text: f" [see {annotation.url_citation.title}] ({annotation.url_citation.url})"
                     for annotation in message.url_citation_annotations
                 }
-                for message_text in message.text_messages:
-                    message_str = message_text.text.value
-                    for k, v in placeholder_annotations.items():
-                        message_str = message_str.replace(k, v)
-                    print(f"{message.role}: {message_str}")
-            else:
-                for message_text in message.text_messages:
-                    print(f"{message.role}: {message_text.text.value}")
+
+            for message_text in message.text_messages:
+                message_str = message_text.text.value
+                for k, v in placeholder_annotations.items():
+                    message_str = message_str.replace(k, v)
+                print_banner(f"Agent Response:\n\n{message_str}")
         # [END populate_references_agent_with_azure_ai_search_tool]
 
 
