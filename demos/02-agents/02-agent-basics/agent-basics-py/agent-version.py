@@ -25,7 +25,7 @@ def main():
     project_client = AIProjectClient(endpoint=endpoint, credential=DefaultAzureCredential())
     openai_client = project_client.get_openai_client()
 
-    agent_name = "agent-versions"
+    agent_name = "versions-agent"
 
     with project_client:
         print(f"\n{'='*60}")

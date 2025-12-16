@@ -33,7 +33,7 @@ def main():
         start = time.time()
         # Create a versioned prompt agent. We no longer specify response_format here; it's set per response.
         agent = project_client.agents.create_version(
-            agent_name="json-format-agent",
+            agent_name="response-format-agent",
             definition=PromptAgentDefinition(
                 model=model,
                 instructions="You are a helpful agent. Always respond with ONLY a valid JSON object, no extra commentary."

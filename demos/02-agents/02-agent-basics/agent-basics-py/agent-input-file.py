@@ -37,7 +37,7 @@ with project_client:
     try:
         # Create agent using new create_version API
         agent = project_client.agents.create_version(
-            agent_name="file-search-agent-mig",
+            agent_name="input-file-agent",
             definition=PromptAgentDefinition(
                 model=model,
                 instructions="You are helpful agent",

@@ -4,9 +4,21 @@ import sys
 from dotenv import load_dotenv
 from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
+from azure.ai.projects.models import PromptAgentDefinition
 
 # Configure UTF-8 encoding for Windows console (fixes emoji display issues)
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+
+def is_new_ms_foundry_endpoint(endpoint: str) -> bool:
+    if not endpoint:
+        return False
+    endpoint_l = endpoint.lower()
+    return (
+        "foundry.microsoft.com" in endpoint_l
+        or endpoint_l.startswith("https://api.foundry.")
+        or ".foundry.microsoft.com" in endpoint_l
+    )
 
 
 def main():
@@ -14,7 +26,7 @@ def main():
     # Clear the console
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Load environment variables from .env file
+    # Load env only; no flags. Use PROJECT_ENDPOINT.
     load_dotenv()
     endpoint = os.getenv("PROJECT_ENDPOINT")
 
@@ -23,6 +35,13 @@ def main():
     print(f"{'='*70}")
     print(f"Endpoint: {endpoint}")
     print()
+
+    if not endpoint:
+        print("❌ PROJECT_ENDPOINT not set and --endpoint not provided.")
+        print("   Please provide a Classic Azure AI Foundry project endpoint.")
+        sys.exit(1)
+
+    # Operate on the given endpoint (Classic or Microsoft Foundry). No flags required.
 
     project_client = AIProjectClient(
         endpoint=endpoint,
@@ -62,21 +81,41 @@ def main():
                             elif desc:
                                 description = desc
 
+                    # Determine if this is a Single Agent (prompt-based)
+                    is_single = False
+                    try:
+                        # Best-effort detection: PromptAgentDefinition type or having 'instructions'
+                        if isinstance(getattr(version, 'definition', None), PromptAgentDefinition):
+                            is_single = True
+                        elif hasattr(version, 'definition') and hasattr(version.definition, 'instructions'):
+                            is_single = True
+                    except Exception:
+                        pass
+
                     agent_versions.append({
                         'number': agent_counter,
                         'agent_name': agent.name,
                         'version': version.version,
                         'model': model_name,
-                        'description': description
+                        'description': description,
+                        'is_single': is_single,
                     })
             except Exception as e:
                 print(f"⚠️  Could not fetch versions for agent '{agent.name}': {e}")
 
         if not agent_versions:
             print("\n✅ No agent versions found. Nothing to delete.")
+            print("   Ensure PROJECT_ENDPOINT points to your Microsoft Foundry project if you expect Single Agents.")
             return
 
-        print(f"\n📊 Found {len(agent_versions)} agent version(s):")
+        # Always restrict to Single (Declarative) Agents
+        agent_versions = [av for av in agent_versions if av.get('is_single')]
+
+        if not agent_versions:
+            print("\n✅ No Single (declarative) agents found. Nothing to delete.")
+            return
+
+        print(f"\n📊 Found {len(agent_versions)} Single Agent version(s):")
         print(f"{'─'*100}")
         print(f"{'#':<3} {'Agent Name':<20} {'Version':<8} {'Model':<20} {'Description'}")
         print(f"{'─'*100}")
@@ -87,51 +126,10 @@ def main():
             print(f"{av['number']:<3} {av['agent_name']:<20} {av['version']:<8} {model_display:<20} {desc_display}")
 
         print(f"{'─'*100}")
-        print()
-        print("Select agent versions to delete:")
-        print("  - Enter numbers separated by commas (e.g., 1,3,8)")
-        print("  - Enter 'all' to delete all agent versions")
-        print("  - Enter 'q' to quit")
-        print()
+        # Non-interactive: delete all listed Single Agent versions
+        versions_to_delete = agent_versions
 
-        selection = input("Your selection: ").strip().lower()
-
-        if selection == 'q':
-            print("\n✅ Cancelled. No agents were deleted.")
-            return
-
-        # Determine which agent versions to delete
-        versions_to_delete = []
-
-        if selection == 'all':
-            versions_to_delete = agent_versions
-        else:
-            try:
-                indices = [int(x.strip()) for x in selection.split(',')]
-                for idx in indices:
-                    matching_versions = [av for av in agent_versions if av['number'] == idx]
-                    if matching_versions:
-                        versions_to_delete.extend(matching_versions)
-                    else:
-                        print(f"⚠️  Invalid selection: {idx} (out of range)")
-            except ValueError:
-                print("❌ Invalid input format. Please enter numbers separated by commas.")
-                return
-
-        if not versions_to_delete:
-            print("\n✅ No agent versions selected. Nothing to delete.")
-            return
-
-        print(f"\n🗑️  Selected {len(versions_to_delete)} agent version(s) for deletion:")
-        for av in versions_to_delete:
-            print(f"  - {av['agent_name']}:{av['version']} ({av['model']})")
-
-        print()
-        final_confirm = input(f"⚠️  Proceed to delete {len(versions_to_delete)} agent version(s)? (yes/no): ").strip().lower()
-
-        if final_confirm not in ['yes', 'y']:
-            print("\n✅ Cancelled. No agents were deleted.")
-            return
+        print(f"\n🗑️  Deleting {len(versions_to_delete)} Single Agent version(s)...")
 
         print()
         print("🗑️  Deleting agent versions...")
@@ -139,6 +137,7 @@ def main():
 
         deleted_count = 0
         failed_count = 0
+        affected_agents = set()
 
         for i, av in enumerate(versions_to_delete, 1):
             try:
@@ -148,9 +147,26 @@ def main():
                 )
                 print(f"✓ [{i}/{len(versions_to_delete)}] Deleted: {av['agent_name']}:{av['version']}")
                 deleted_count += 1
+                affected_agents.add(av['agent_name'])
             except Exception as e:
                 print(f"✗ [{i}/{len(versions_to_delete)}] Failed to delete {av['agent_name']}:{av['version']}: {e}")
                 failed_count += 1
+
+        # Attempt to delete empty agent containers too (best-effort)
+        print(f"{'─'*70}")
+        print("🧹 Cleaning up empty agent containers (best effort)...")
+        container_deleted = 0
+        container_failed = 0
+        for idx, agent_name in enumerate(sorted(affected_agents), 1):
+            try:
+                # Some SDK versions support deleting the agent container (no version argument)
+                project_client.agents.delete(agent_name=agent_name)
+                print(f"• [{idx}/{len(affected_agents)}] Deleted agent container: {agent_name}")
+                container_deleted += 1
+            except Exception as e:
+                # Not all SDKs expose this; ignore failures
+                print(f"• [{idx}/{len(affected_agents)}] Could not delete agent container {agent_name}: {e}")
+                container_failed += 1
 
         print(f"{'─'*70}")
         print()
@@ -160,6 +176,8 @@ def main():
         print(f"✅ Successfully deleted: {deleted_count} agent version(s)")
         if failed_count > 0:
             print(f"❌ Failed to delete: {failed_count} agent version(s)")
+        if container_deleted or container_failed:
+            print(f"🧹 Agent containers deleted: {container_deleted}; failed: {container_failed}")
         print(f"{'='*70}")
 
 
