@@ -1,0 +1,14 @@
+# Azure AI Agent Service Basics
+
+## Demo Scripts Overview
+
+| Script                     | Focus                                  | What It Demonstrates                                                                                                                                                                                                     |
+| -------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `agent-basics.py`          | Core lifecycle                         | Creates an agent using the responses API, sends a user input with streaming enabled, prints the agent's response in real-time, and cleans up resources. Shows the minimal workflow for interacting with Azure AI Agents. |
+| `agent-tracing.py`         | Tracing and observability              | Creates an agent with OpenTelemetry tracing enabled, sends an image input via streaming responses API, records tracing spans for observability, and demonstrates monitoring agent interactions in Azure AI Foundry.      |
+| `agent-response-format.py` | Structured output                      | Creates an agent configured for JSON responses, sends a structured query, streams the JSON response in real-time, and parses the output. Illustrates enforcing structured data for downstream processing.                |
+| `agent-input-file.py`      | File input (image)                     | Creates an agent, encodes a local image to base64, sends it with text input via streaming responses API, and displays the agent's image analysis in real-time. Shows multi-modal input handling.                         |
+| `agent-input-url.py`       | URL image input                        | Creates an agent, sends a public image URL with text input via streaming responses API, and displays the agent's analysis in real-time. Demonstrates external image reference handling.                                  |
+| `agent-input-base64.py`    | Data URL image input                   | Creates an agent, converts a local image to base64 data URL, sends it with text input via streaming responses API, and displays the agent's analysis in real-time. Shows inline image embedding.                         |
+| `agent-output.py`          | Post-processing & external integration | Creates an agent, streams its response, captures the output, generates a QR code from user input, and uploads it to Azure Blob Storage. Demonstrates chaining agent output into application logic.                       |
+| `agent-version.py`         | Agent versioning                       | Creates multiple versions of the same agent with different instructions, executes each version, and lists all available versions. Demonstrates agent lifecycle management and version control in Azure AI Foundry.       |
