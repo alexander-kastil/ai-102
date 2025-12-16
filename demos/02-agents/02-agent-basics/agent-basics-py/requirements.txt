@@ -1,7 +1,7 @@
 python-dotenv==1.2.1
 azure-identity==1.25.1
 azure-ai-projects==2.0.0b2
-azure-ai-agents==1.2.0b6
+azure-ai-agents==1.2.0b5
 pathlib==1.0.1
 qrcode[pil]==8.2
 azure-storage-blob==12.27.1
