@@ -36,6 +36,7 @@ except Exception:
 # Read logging configuration from environment
 verbose_output = os.getenv("VERBOSE_OUTPUT", "false") == "true"
 create_mermaid_diagram = os.getenv("CREATE_MERMAID_DIAGRAM", "false") == "true"
+cleanup_enabled = os.getenv("CLEANUP", "true") == "true"
 
 # Derive ticket folder path nested under output path per requirement
 output_path = os.getenv("OUTPUT_PATH", "./output")
@@ -236,15 +237,18 @@ with agents_client:
             token_usage_out=token_usage_out
         )
     
-    # Delete the agent when done
-    logging.info("Cleaning up agents ...")
-    agents_client.delete_agent(agent.id)
-    logging.info("Deleted triage agent.")
+    if cleanup_enabled:
+        # Delete the agent when done
+        logging.info("Cleaning up agents ...")
+        agents_client.delete_agent(agent.id)
+        logging.info("Deleted triage agent.")
 
-    # Delete the connected agents when done
-    agents_client.delete_agent(priority_agent.id)
-    logging.info("Deleted priority agent.")
-    agents_client.delete_agent(team_agent.id)
-    logging.info("Deleted team agent.")
-    agents_client.delete_agent(effort_agent.id)
-    logging.info("Deleted effort agent.")
+        # Delete the connected agents when done
+        agents_client.delete_agent(priority_agent.id)
+        logging.info("Deleted priority agent.")
+        agents_client.delete_agent(team_agent.id)
+        logging.info("Deleted team agent.")
+        agents_client.delete_agent(effort_agent.id)
+        logging.info("Deleted effort agent.")
+    else:
+        logging.info("Cleanup disabled via CLEANUP=false; agents left running.")
