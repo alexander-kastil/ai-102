@@ -24,7 +24,7 @@ def main():
         cog_key = os.getenv('VISION_KEY')
 
         # Get image
-        image_file = 'images/face1.jpg'
+        image_file = 'images/faces.jpg'
         if len(sys.argv) > 1:
             image_file = sys.argv[1]
 
