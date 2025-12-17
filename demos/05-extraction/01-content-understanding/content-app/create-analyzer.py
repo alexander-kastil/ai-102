@@ -81,10 +81,5 @@ def create_analyzer (schema, analyzer, endpoint, key):
         print("Analyzer creation failed.")
         print(result_response.json())
 
- 
-
-
-
-
 if __name__ == "__main__":
     main()        
