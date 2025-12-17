@@ -7,9 +7,9 @@ from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 from azure.ai.projects.models import PromptAgentDefinition, FunctionTool
 from openai import OpenAI  # type: ignore
-import qrcode
 from datetime import datetime
 from azure.storage.blob import BlobServiceClient
+import qrcode  # Make sure to import qrcode module
 
 # This demo shows post-processing of agent responses and external integration.
 # It creates an agent, streams its response, captures the output, generates a QR code
@@ -46,6 +46,21 @@ def generate_qr_code(content: str, storage_connection_string: str, storage_conta
     download_url = f"https://procodestorageacct.blob.core.windows.net/{storage_container_name}/{blob_name}"
     return download_url
 
+def upload_qr_code_to_blob(qr_code_image, storage_connection_string, storage_container_name):
+    from azure.storage.blob import BlobServiceClient
+    import io
+
+    # Convert image to bytes
+    img_byte_arr = io.BytesIO()
+    qr_code_image.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
+
+    # Upload to Azure Blob Storage
+    blob_service_client = BlobServiceClient.from_connection_string(storage_connection_string)
+    blob_client = blob_service_client.get_blob_client(container=storage_container_name, blob='qr_code.png')
+    blob_client.upload_blob(img_byte_arr, overwrite=True)
+    return f'https://{blob_service_client.account_name}.blob.core.windows.net/{storage_container_name}/qr_code.png'
+
 
 def main():
 
@@ -74,17 +89,13 @@ def main():
             definition=PromptAgentDefinition(
                 model=model,
                 instructions=(
-                    "You are a helpful agent. When asked to generate a QR code, "
-                    "call the generate_qr_code function tool with the 'content' to encode, "
-                    "then return the resulting download URL."
+                    "You are a helpful agent. First, generate a QR code using the 'generate_qr_code' function tool, "
+                    "then upload it using the 'upload_qr_code_to_blob' function tool, and return the resulting download URL."
                 ),
                 tools=[
                     FunctionTool(
                         name="generate_qr_code",
-                        description=(
-                            "Generate a QR code for the provided content, upload to Azure Blob Storage, "
-                            "and return the public download URL."
-                        ),
+                        description="Generate a QR code for the provided content.",
                         parameters={
                             "type": "object",
                             "properties": {
@@ -94,6 +105,28 @@ def main():
                                 }
                             },
                             "required": ["content"]
+                        }
+                    ),
+                    FunctionTool(
+                        name="upload_qr_code_to_blob",
+                        description="Upload the generated QR code image to Azure Blob Storage.",
+                        parameters={
+                            "type": "object",
+                            "properties": {
+                                "qr_code_image": {
+                                    "type": "string",
+                                    "description": "The QR code image to upload."
+                                },
+                                "storage_connection_string": {
+                                    "type": "string",
+                                    "description": "Connection string for Azure Blob Storage."
+                                },
+                                "storage_container_name": {
+                                    "type": "string",
+                                    "description": "The name of the Azure Blob Storage container."
+                                }
+                            },
+                            "required": ["qr_code_image", "storage_connection_string", "storage_container_name"]
                         }
                     )
                 ]
