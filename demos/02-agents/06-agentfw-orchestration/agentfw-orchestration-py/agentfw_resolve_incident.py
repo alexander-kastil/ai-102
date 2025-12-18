@@ -51,6 +51,13 @@ async def main():
     logging.info(f"Log directory: {log_path}")
     logging.info(f"Outcome directory: {outcome_path}")
 
+    # Ensure there are logs to process
+    log_files = list(log_path.glob("*.log"))
+    if not log_files:
+        logging.warning(f"No .log files found in {log_path}. Place incident logs there (e.g., app-error.log).")
+        print(f"No .log files found in {log_path}. Place incident logs there (e.g., app-error.log).")
+        return
+
     # Get configuration settings
     project_endpoint = os.getenv("PROJECT_ENDPOINT")
     model_deployment = os.getenv("MODEL_DEPLOYMENT")
@@ -108,7 +115,7 @@ RULES:
         logging.info("Orchestrator agent created successfully.")
         
         # Process each log file
-        for log_file in log_path.glob("*.log"):
+        for log_file in log_files:
             filename = log_file.name
             logfile_path = str(log_file)
             
