@@ -4,9 +4,14 @@ import logging
 
 from agent_framework import AgentRunUpdateEvent
 from agent_framework.azure import AzureAIAgentClient
-from agent_framework.observability import setup_observability
 from dotenv import load_dotenv
 from workflow_core import create_agent, get_credential
+
+# Attempt to import observability setup; handle older/newer SDK variants gracefully.
+try:
+    from agent_framework.observability import setup_observability  # type: ignore
+except Exception:
+    setup_observability = None  # type: ignore
 
 load_dotenv(override=True)
 
@@ -15,8 +20,13 @@ async def main() -> None:
     # Initialize observability only when explicitly enabled.
     # Set ENABLE_TRACING=true to export to a local collector (default VS Code port 4319).
     if os.getenv("ENABLE_TRACING", "").strip().lower() in ("1", "true", "yes", "on"):
-        port = int(os.getenv("OTEL_COLLECTOR_PORT", "4319"))
-        setup_observability(vs_code_extension_port=port, enable_sensitive_data=False)
+        if setup_observability is not None:
+            port = int(os.getenv("OTEL_COLLECTOR_PORT", "4319"))
+            setup_observability(vs_code_extension_port=port, enable_sensitive_data=False)  # type: ignore
+        else:
+            logging.getLogger(__name__).warning(
+                "Observability setup is unavailable in this SDK version; proceeding without tracing."
+            )
 
     # Suppress terminal-node runner warnings from agent framework in one-way flows.
     logging.getLogger("agent_framework._workflows._runner").setLevel(logging.ERROR)
@@ -26,7 +36,7 @@ async def main() -> None:
         print(f"\n{line}\n{title}\n{line}")
 
     async with get_credential() as credential:
-        async with AzureAIAgentClient(async_credential=credential) as chat_client:
+        async with AzureAIAgentClient(credential=credential) as chat_client:
             # Use workflow form for rich streaming; warnings are suppressed via logging.
             agent = await create_agent(chat_client, as_agent=False)
 
